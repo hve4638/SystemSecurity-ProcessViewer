@@ -13,7 +13,6 @@ class InfoDialog(QDialog):
         self.setLayout(layout)
 
 class FileExplorer(QMainWindow):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.dialogs = []  # 생성된 QDialog 객체들을 저장하기 위한 리스트

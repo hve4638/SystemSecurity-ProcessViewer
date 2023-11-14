@@ -5,6 +5,10 @@ from datetime import datetime
 
 class FrontAPI:
     @classmethod
+    def security_check():
+        pass
+
+    @classmethod
     def check_unmatched_ext(cls, fileinfo:dict)->bool:
         guess_ext.guess_ext(fileinfo)
     

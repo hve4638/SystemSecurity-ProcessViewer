@@ -1,7 +1,14 @@
-import subprocess
+import subprocess, os
 import winreg
 
+def pw(command):
+    return cmd(f"powershell {command}")
+
 def cmd(command):
+    return subprocess.check_output(command, shell=True, text=True, encoding="EUC-KR")
+    return os.popen(command).read()
+
+def scmd(command):
     return subprocess.check_output(command, shell=True, text=True)
 
 def get_registry_value(registry_path, value_name):
