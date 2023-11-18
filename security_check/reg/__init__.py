@@ -1,12 +1,21 @@
+from typing import Final
 import subprocess, os
 import winreg
+
+cand_encoding = [ "EUC-KR", "UTF-16", "UTF-8" ]
 
 def pw(command):
     return cmd(f"powershell {command}")
 
 def cmd(command):
-    return subprocess.check_output(command, shell=True, text=True, encoding="EUC-KR")
-    return os.popen(command).read()
+    for encoding in cand_encoding:
+        try:
+            return subprocess.check_output(command, shell=True, text=True, encoding=encoding)
+        except UnicodeError:
+            continue
+        except UnicodeDecodeError:
+            continue
+    raise UnicodeDecodeError()
 
 def scmd(command):
     return subprocess.check_output(command, shell=True, text=True)

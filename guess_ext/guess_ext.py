@@ -103,7 +103,8 @@ def guess_ext(filename)->list[str]: # filename:str - 파일 경로
     return enable_list # list[str] - 가능한 확장자명을 리스트에 담아 출력
 
 
-# 테스팅 코드
-fd = "C:/Users/clost/Downloads/PALOMA.pdf"
-flist = guess_ext(fd)
-print(flist)
+if __name__ == "__main__":
+    # 테스팅 코드
+    fd = "C:/Users/clost/Downloads/PALOMA.pdf"
+    flist = guess_ext(fd)
+    print(flist)

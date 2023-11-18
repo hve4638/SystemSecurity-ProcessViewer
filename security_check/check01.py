@@ -226,7 +226,7 @@ def check_pc16():
     if drives:
         results.put({
             "id" : "PC-16",
-            "sub-id" : "PC-05-SERVICE-INVALIDFS",
+            "sub-id" : "PC-16-SERVICE-INVALIDFS",
             "type" : "error",
             "reason" : "드라이브가 NTFS 포맷이 아닙니다",
             "addition" : {
