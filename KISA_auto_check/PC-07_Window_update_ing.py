@@ -40,9 +40,6 @@ class CatalogParser(HTMLParser):
             print(f'First row hotfix ID: {self.hotfix_id}, Date: {self.date}')
             self.first_row_parsed = True
 
-
-
-
 def get_latest_version_and_date(hotfix_id):
     # Microsoft Update Catalog의 URL
     url = f'https://www.catalog.update.microsoft.com/Search.aspx?q={hotfix_id}'
@@ -78,8 +75,6 @@ def check_pc06():
             print(f'{hotfix_id}는 최신 버전이 아닙니다. 업데이트가 필요합니다.')
         else:
             print(f'{hotfix_id}는 이미 최신 버전입니다.')
-
-
 
 def get_hotfix():
     # Command to check Windows Update status
