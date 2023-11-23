@@ -19,7 +19,7 @@ EOD = {
     "eod": True # 항상 true. bool 타입
 }
 
-def info_file(filename: str) -> Dict:
+def info_file(filename: str)->dict:
     file_info = {}
     
     # 파일 존재 유무 확인
