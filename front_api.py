@@ -157,3 +157,6 @@ class FrontAPI:
             })
 
             return q
+    
+    class FileExplorer:
+        pass
