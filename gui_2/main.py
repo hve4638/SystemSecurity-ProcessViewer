@@ -16,7 +16,7 @@
 
 # IMPORT PACKAGES AND MODULES
 # ///////////////////////////////////////////////////////////////
-from gui.uis.windows.main_window.functions_main_window import *
+from .gui.uis.windows.main_window.functions_main_window import *
 import sys
 import os
 
@@ -252,7 +252,7 @@ class MainWindow(QMainWindow):
 # SETTINGS WHEN TO START
 # Set the initial class and also additional parameters of the "QApplication" class
 # ///////////////////////////////////////////////////////////////
-if __name__ == "__main__":
+def GUimain(self):
     # APPLICATION
     # ///////////////////////////////////////////////////////////////
     app = QApplication(sys.argv)
