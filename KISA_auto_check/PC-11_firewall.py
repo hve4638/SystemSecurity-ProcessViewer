@@ -21,20 +21,21 @@ def get_registry_value(registry_path, value_name):
         print("An error occurred: ", e)
         return None
 
-# path of registry
-registry_path = r'SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile'
+if __name__ == "__main__":
+    # path of registry
+    registry_path = r'SYSTEM\CurrentControlSet\Services\SharedAccess\Parameters\FirewallPolicy\StandardProfile'
 
-# name of specific value
-value_name = 'EnableFirewall'
+    # name of specific value
+    value_name = 'EnableFirewall'
 
-firewall_value = get_registry_value(registry_path, value_name)
+    firewall_value = get_registry_value(registry_path, value_name)
 
-print(f"EnableFirewall 값: {firewall_value}")
+    print(f"EnableFirewall 값: {firewall_value}")
 
-if firewall_value is not None:
-    if firewall_value == 1:
-        print("정상")
-    elif firewall_value == 0:
-        print("취약점 발견")
-else:
-    print("EnableFirewall 레지스트리 값을 읽을 수 없습니다.")
+    if firewall_value is not None:
+        if firewall_value == 1:
+            print("정상")
+        elif firewall_value == 0:
+            print("취약점 발견")
+    else:
+        print("EnableFirewall 레지스트리 값을 읽을 수 없습니다.")
