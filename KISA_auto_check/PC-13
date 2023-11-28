@@ -23,23 +23,25 @@ def get_LMregistry_value(registry_path, value_name):
         return None
 
 
-#PC-13 (기능 미비)
-# 제어판에서 설정하는 값과 해당 레지스트리의 기능이 별개로 작용
-# 해당 레지스트리의 기능이 우선됨, 하지만 해당 레지스트리 설정 없이도 작용가능
-# path of registry
-registry_path = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
-# name of specific value
-value_name = 'NoDriveTypeAutoRun'
 
-AutoRun_value = get_LMregistry_value(registry_path, value_name)
-print(f"NoDriveTypeAutoRun 값: {AutoRun_value}")
-if AutoRun_value is not None:
-    if AutoRun_value == 1:
-        print("정상: 이동식 미디어에 대한 자동실행 방지가 작동하고 있습니다.")
-    elif AutoRun_value == 0:
-        print("취약점 발견: 이동식 미디어에 대한 자동실행 방지가 작동하고 있지 않습니다.")
+if __name__ == "__main__":
+    #PC-13 
+    # 제어판에서 설정하는 값과 해당 레지스트리의 기능이 별개로 작용
+    # 해당 레지스트리의 기능이 우선됨, 하지만 해당 레지스트리 설정 없이도 작용가능
+    # path of registry
+    registry_path = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    # name of specific value
+    value_name = 'NoDriveTypeAutoRun'
+
+    AutoRun_value = get_LMregistry_value(registry_path, value_name)
+    print(f"NoDriveTypeAutoRun 값: {AutoRun_value}")
+    if AutoRun_value is not None:
+        if AutoRun_value == 1:
+            print("정상: 이동식 미디어에 대한 자동실행 방지가 작동하고 있습니다.")
+        elif AutoRun_value == 0:
+            print("취약점 발견: 이동식 미디어에 대한 자동실행 방지가 작동하고 있지 않습니다.")
+        else:
+            print("취약점 발견: 예상치 못한 레지스트리 값")
     else:
-        print("취약점 발견: 예상치 못한 레지스트리 값")
-else:
-    print("NoDriveTypeAutoRun 레지스트리 값을 읽을 수 없습니다.")
-print("")
+        print("NoDriveTypeAutoRun 레지스트리 값을 읽을 수 없습니다.")
+
