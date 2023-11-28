@@ -154,13 +154,6 @@ def check_pc10():
             "type" : "error",
             "reason" : "백신의 실시간 감시가 감지되지 않습니다."
         })
-    else:
-        results.put({
-            "id" : "PC-10",
-            "sub-id" : "PC-10",
-            "type" : "info",
-            "reason" : "백신의 실시간 감시가 감지됩니다."
-        })
     return results
 
 
@@ -175,12 +168,7 @@ def check_pc11():
     firewall_value = get_LMregistry_value(registry_path, value_name)
     if firewall_value is not None:
         if firewall_value == 1:
-            results.put({
-                "id" : "PC-11",
-                "sub-id" : "PC-11",
-                "type" : "info",
-                "reason" : "방화벽이 설정되어 있습니다."
-            })
+            pass
         elif firewall_value == 0:
             results.put({
                 "id" : "PC-11",
@@ -222,12 +210,7 @@ def check_pc12():
 
     if SaveActive_value is not None:
         if SaveActive_value == 1:
-            results.put({
-                "id" : "PC-12",
-                "sub-id" : "PC-12",
-                "type" : "info",
-                "reason" : "화면 보호기가 활성화되어 있습니다."
-            })
+            pass
         elif SaveActive_value == 0:
             results.put({
                 "id" : "PC-12",
@@ -251,12 +234,7 @@ def check_pc12():
         })
     if SaverIsSecure_value is not None:
         if SaverIsSecure_value == 1:
-            results.put({
-                "id" : "PC-12",
-                "sub-id" : "PC-12",
-                "type" : "info",
-                "reason" : "화면 보호기가 암호로 보호받고 있습니다."
-            })
+            pass
         elif SaverIsSecure_value == 0:
             results.put({
                 "id" : "PC-12",
@@ -280,12 +258,7 @@ def check_pc12():
         })
     if SaveTimeout_value is not None:
         if SaveTimeout_value <= 600:
-            results.put({
-                "id" : "PC-12",
-                "sub-id" : "PC-12",
-                "type" : "info",
-                "reason" : "화면 보호기가 적절한 시간내로 동작합니다."
-            })
+            pass
         elif SaveTimeout_value > 600:
             results.put({
                 "id" : "PC-12",
@@ -323,12 +296,7 @@ def check_pc13():
 
     if AutoRun_value is not None:
         if AutoRun_value == 255:
-            results.put({
-                "id" : "PC-13",
-                "sub-id" : "PC-13",
-                "type" : "info",
-                "reason" : "모든 이동식 미디어에 대한 자동실행 방지가 수행되고 있습니다."
-            })
+            pass
         else:
             results.put({
                 "id" : "PC-13",
@@ -356,12 +324,7 @@ def check_pc19():
 
     if Connection_value is not None:
         if Connection_value == 1:
-            results.put({
-                "id" : "PC-19",
-                "sub-id" : "PC-19",
-                "type" : "info",
-                "reason" : "외부 데스크톱 연결이 차단되어 있습니다."
-            })
+            pass
         elif Connection_value == 0:
             results.put({
                 "id" : "PC-19",
