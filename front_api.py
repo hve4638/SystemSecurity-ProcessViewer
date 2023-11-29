@@ -1,10 +1,22 @@
-import date_pin
-import guess_ext
-import security_check
+import time
 from queue import Queue
 from datetime import datetime
+import date_pin
+import guess_ext
+import file_info
+import security_check
+import VirusTotal as vt
 
 class FrontAPI:
+    initialized = False
+    @classmethod
+    def initialize(cls):
+        if cls.initialized:
+            raise Exception("initialize()는 한번만 호출되어야 합니다")
+        cls.initialized = True
+
+        vt.virustotal_init()
+
     class SecurityCheck:
         @classmethod
         def get_checklist(cls):
@@ -158,5 +170,32 @@ class FrontAPI:
 
             return q
     
-    class FileExplorer:
-        pass
+    class VirusTotal:
+        @classmethod
+        def upload_file(cls, filename:str):
+            return cls.upload_files([filename])
+
+        @classmethod
+        def upload_files(cls, filenames:list[str]):
+            tokens = []
+            def getlog():
+                for filename, token in tokens:
+                    while True:
+                        result = vt.virustotal_get_result(filename, True)
+                        match result["status"]:
+                            case "done" | "error":
+                                if result["detected"]:
+                                    yield f'detected! (file:"{filename}")\n'
+                                break
+                            case _:
+                                yield ""
+                                continue
+                    time.sleep(0)
+                yield "work done\n"
+                yield None
+
+            for filename in filenames:
+                token = vt.virustotal_upload(filename)
+                tokens.append((filename, token))
+
+            return getlog

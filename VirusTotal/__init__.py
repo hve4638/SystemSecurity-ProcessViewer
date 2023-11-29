@@ -1,0 +1,1 @@
+from .new_virus import virustotal_init, virustotal_upload, virustotal_get_result
