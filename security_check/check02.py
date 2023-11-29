@@ -65,11 +65,103 @@ def get_CUSERregistry_value(registry_path, value_name):
     except Exception as e:
         return None
 
+
+
+
+def solve_pc01_A(): # PC01에 대해 
+    pass # ...
+
+
+def get_solve(info):
+    results = Queue()
+    if info["id"] == "PC-10": # 백신 프로그램의 실시간 감지 
+        if info["sub-id"] == "unknown":
+            results.put({
+                "type" : "link",
+            })
+            
+    elif info["id"] == "PC-11": 
+        if info["sub-id"] == "PC-11-NOTFIREWALL":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "unknown":
+            results.put({
+                "type" : "link",
+            })
+
+    elif info["id"] == "PC-12": 
+        if info["sub-id"] == "PC-12-NOT_SCREENSAVERACTIVE":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "PC-12-UNEXPECTED_SCREENSAVERACTIVE":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "unknown_SCREENSAVERACTIVE":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "PC-12-NOT_SCREENSAVESECURE":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "PC-12-UNEXPECTED_SCREENSAVESECURE":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "unknown_SCREENSAVESECURE":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "PC-12-TOOLONG_SCREENSAVETIMEOUT":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "PC-12-UNEXPECTED_SCREENSAVETIMEOUT":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "unknown_SCREENSAVETIMEOUT":
+            results.put({
+                "type" : "link",
+            })
+
+    elif info["id"] == "PC-13": 
+        if info["sub-id"] == "PC-13-NOTDRIVEDENY":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "unknown":
+            results.put({
+                "type" : "link",
+            })
+
+    elif info["id"] == "PC-19": 
+        if info["sub-id"] == "PC-19-NOT_DENYREMOTECONN":
+            results.put({
+                "type" : "link"
+            })
+        elif info["sub-id"] == "PC-19-UNEXPECTED_DENYREMOTECONN":
+            results.put({
+                "type" : "link"
+            })
+        elif info["sub-id"] == "unknown":
+            results.put({
+                "type" : "link"
+            })
+    else: # 알 수 없는 id 값
+        pass
+    return results
+
+
+
 def test_check(results:Queue):
     while not results.empty():
         print(results.get())
+        # get_solve(results.get())
         
-
 
 
 def check_pc10():
@@ -228,7 +320,7 @@ def check_pc12():
     else:
         results.put({
             "id" : "PC-12",
-            "sub-id" : "unknown",
+            "sub-id" : "unknown_SCREENSAVERACTIVE",
             "type" : "error",
             "reason" : "화면 보호기 활성화 관련 레지스트리 값이 존재하지 않습니다."
         })
@@ -252,7 +344,7 @@ def check_pc12():
     else:
         results.put({
                 "id" : "PC-12",
-                "sub-id" : "unknown",
+                "sub-id" : "unknown_SCREENSAVESECURE",
                 "type" : "error",
                 "reason" : "화면 보호기 암호 설정 관련 레지스트리 값이 존재하지 않습니다."
         })
@@ -262,7 +354,7 @@ def check_pc12():
         elif SaveTimeout_value > 600:
             results.put({
                 "id" : "PC-12",
-                "sub-id" : "PC-12-NOT_SCREENSAVETIMEOUT",
+                "sub-id" : "PC-12-TOOLONG_SCREENSAVETIMEOUT",
                 "type" : "error",
                 "reason" : "화면 보호기 동작에 걸리는 시간이 너무 깁니다."
             })
@@ -276,7 +368,7 @@ def check_pc12():
     else:
         results.put({
             "id" : "PC-12",
-            "sub-id" : "unknown",
+            "sub-id" : "unknown_SCREENSAVETIMEOUT",
             "type" : "error",
             "reason" : "화면 보호기 타임아웃 설정 관련 레지스트리 값이 존재하지 않습니다."
         })
@@ -285,8 +377,6 @@ def check_pc12():
 
 def check_pc13():
     results = Queue()
-    # 제어판에서 설정하는 값과 해당 레지스트리의 기능이 별개로 작용
-    # 해당 레지스트리의 기능이 우선됨, 하지만 해당 레지스트리 설정 없이도 작용가능
     # path of registry
     registry_path = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
     # name of specific value
@@ -335,7 +425,7 @@ def check_pc19():
         else:
             results.put({
                 "id" : "PC-19",
-                "sub-id" : "PC-19-NOTDRIVEDENY",
+                "sub-id" : "PC-19-UNEXPECTED_DENYREMOTECONN",
                 "type" : "error",
                 "reason" : "알 수 없는 레지스트리 값이 설정되어 있습니다."
             })
@@ -356,4 +446,3 @@ if __name__ == "__main__":
     test_check(check_pc13())
     test_check(check_pc19())
     
-
