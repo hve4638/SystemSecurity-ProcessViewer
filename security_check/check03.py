@@ -7,9 +7,9 @@ import subprocess
 from queue import Queue
 from urllib.request import urlopen
 
-# check_pc06 : 
-# check_pc07 :
-# check_pc08 : 
+# check_pc06 : HOT FIX 등 최신 보안패치 적용 확인
+# check_pc07 : 최신 서비스팩 적용 확인
+# check_pc08 : MS-Office, 한글, 어도비 아크로뱃 등의 응용프로그램에 대한 최신 보안패치 적용 확인
 
 class CatalogParser(HTMLParser):
     def __init__(self):
@@ -431,6 +431,57 @@ def test_check(results:Queue):
     while not results.empty():
         print(results.get())
         # get_solve(results.get())
+
+def get_solve(info):
+    results = Queue()
+    if info["id"] == "PC-06":
+        if info["sub-id"] == "PC-06-update_.ver":
+            results.put({
+                "type" : "link",
+            })
+            
+    elif info["id"] == "PC-07":
+        if info["sub-id"] == "PC-07-update_.ver":
+            results.put({
+                "type" : "link",
+            })
+
+    elif info["id"] == "PC-08":
+        if info["sub-id"] == "PC-08-adobe_acrobat_update_.ver":
+            results.put({
+                "type" : "link",
+            })
+
+        elif info["sub-id"] == "PC-08-adobe_acrobat_uninstall":
+            results.put({
+                "type" : "link",
+            })
+
+        elif info["sub-id"] == "PC-08-hangul_update_.ver":
+            results.put({
+                "type" : "link",
+            })
+        
+        elif info["sub-id"] == "PC-08-ms_update_.ver":
+            results.put({
+                "type" : "link",
+            })
+    
+    elif info["id"] == "PC-17":
+        if info["sub-id"] == "PC-17_delete_os":
+            results.put({
+                "type" : "link",
+            })
+
+    elif info["id"] == "PC-18":
+        if info["sub-id"] == "PC-18_empty_file_folder":
+            results.put({
+                "type" : "link",
+            })
+        elif info["sub-id"] == "PC-18_cant_find_file":
+            results.put({
+                "type" : "link",
+            })
 
 if __name__ == "__main__":
     test_check(check_pc06())
