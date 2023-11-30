@@ -67,9 +67,74 @@ def get_CUSERregistry_value(registry_path, value_name):
 
 
 
+'''
+def solve_pc10(): # PC10 백신 실시간 감지
+    # link
 
-def solve_pc01_A(): # PC01에 대해 
-    pass # ...
+def solve_pc11(): # PC11 방화벽
+    # link
+'''
+
+"""
+PC12에 대한 조치 함수
+type : solve
+"""
+def solve_pc12(): # PC12 화면 보호기
+    reg_handle = winreg.ConnectRegistry(None, winreg.HKEY_CURRENT_USER)
+    
+    # path of registry
+    registry_path = r'Control Panel\Desktop'
+    key = winreg.OpenKey(reg_handle, registry_path, 0, winreg.KEY_WRITE)
+    # name of specific value
+    value_name = 'ScreenSaveActive'
+    winreg.SetValueEx(key, value_name, 0, winreg.REG_SZ, '1')
+    
+    # path of registry
+    registry_path = r'Control Panel\Desktop'
+    key = winreg.OpenKey(reg_handle, registry_path, 0, winreg.KEY_WRITE)
+    # name of specific value
+    value_name = 'ScreenSaverIsSecure'
+    winreg.SetValueEx(key, value_name, 0, winreg.REG_SZ, '1')
+    
+    # path of registry
+    registry_path = r'Control Panel\Desktop'
+    key = winreg.OpenKey(reg_handle, registry_path, 0, winreg.KEY_WRITE)
+    # name of specific value
+    value_name = 'ScreenSaveTimeout'
+    winreg.SetValueEx(key, value_name, 0, winreg.REG_SZ, '600')
+    
+"""
+PC13에 대한 조치 함수 
+type : solve (관리자 권한 필요)
+"""
+def solve_pc13(): # PC13 이동식 미디어 차단
+    reg_handle = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
+    
+    # path of registry
+    registry_path = r'SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer'
+    key = winreg.OpenKey(reg_handle, registry_path, 0, winreg.KEY_WRITE)
+    # name of specific value
+    value_name = 'NoDriveTypeAutoRun'
+    
+    winreg.SetValueEx(key, value_name, 0, winreg.REG_DWORD, 0x000000ff)
+    
+
+'''
+def solve_pc19(): # PC19 외부 연결 차단
+    # link
+'''
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 def get_solve(info):
@@ -90,7 +155,8 @@ def get_solve(info):
                 "type" : "link",
             })
 
-    elif info["id"] == "PC-12": 
+    elif info["id"] == "PC-12":
+        solve_pc12()
         if info["sub-id"] == "PC-12-NOT_SCREENSAVERACTIVE":
             results.put({
                 "type" : "link",
@@ -129,6 +195,7 @@ def get_solve(info):
             })
 
     elif info["id"] == "PC-13": 
+        solve_pc13()
         if info["sub-id"] == "PC-13-NOTDRIVEDENY":
             results.put({
                 "type" : "link",
@@ -157,13 +224,38 @@ def get_solve(info):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def test_check(results:Queue):
     while not results.empty():
-        print(results.get())
-        # get_solve(results.get())
+        # print(results.get())
+        get_solve(results.get())
         
 
 
+"""
+PC10에 대한 검사를 수행
+"""
 def check_pc10():
     results = Queue()
 
@@ -250,6 +342,10 @@ def check_pc10():
 
 
 
+
+"""
+PC11에 대한 검사를 수행
+"""
 def check_pc11():
     results = Queue()
 
@@ -278,6 +374,10 @@ def check_pc11():
     return results
 
 
+
+"""
+PC12에 대한 검사를 수행
+"""
 def check_pc12():
     results = Queue()
     # 화면보호기 레지스트리: ScreenSaveActive, ScreenSaverIsSecure, ScreenSaveTimeout
@@ -288,6 +388,7 @@ def check_pc12():
     # name of specific value
     value_name = 'ScreenSaveActive'
     SaveActive_value = int(get_CUSERregistry_value(registry_path, value_name))
+
     # path of registry
     registry_path = r'Control Panel\Desktop'
     # name of specific value
@@ -375,6 +476,10 @@ def check_pc12():
     return results
 
 
+
+"""
+PC13에 대한 검사를 수행
+"""
 def check_pc13():
     results = Queue()
     # path of registry
@@ -404,6 +509,9 @@ def check_pc13():
     return results
 
 
+"""
+PC19에 대한 검사를 수행
+"""
 def check_pc19():
     results = Queue()
     # path of registry
