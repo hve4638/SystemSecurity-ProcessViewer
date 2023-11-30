@@ -1,11 +1,6 @@
-from typing import Final
 from front_api import FrontAPI
-# from gui import FileExplorer
-from main.py import Guimain
-
-CIL_MODE:Final = True
+from gui_2 import GUimain
 
 if __name__ == "__main__":
-        Gui = Guimain(FrontAPI)
-        exit(Gui.main())
+        GUimain(FrontAPI)
         pass

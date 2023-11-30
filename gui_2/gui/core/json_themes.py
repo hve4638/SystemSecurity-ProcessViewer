@@ -21,7 +21,7 @@ import os
 
 # IMPORT SETTINGS
 # ///////////////////////////////////////////////////////////////
-from gui.core.json_settings import Settings
+from gui_2.gui.core.json_settings import Settings
 
 # APP THEMES
 # ///////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ class Themes(object):
     # APP PATH
     # ///////////////////////////////////////////////////////////////
     json_file = f"gui/themes/{_settings['theme_name']}.json"
-    app_path = os.path.abspath(os.getcwd())
+    app_path = os.path.abspath(os.getcwd()) + "\\gui_2\\"
     settings_path = os.path.normpath(os.path.join(app_path, json_file))
     if not os.path.isfile(settings_path):
         print(f"WARNING: \"gui/themes/{_settings['theme_name']}.json\" not found! check in the folder {settings_path}")
