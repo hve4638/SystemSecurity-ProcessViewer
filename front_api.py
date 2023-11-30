@@ -15,7 +15,7 @@ class FrontAPI:
             raise Exception("initialize()는 한번만 호출되어야 합니다")
         cls.initialized = True
 
-        vt.virustotal_init()
+        #vt.virustotal_init()
 
     class SecurityCheck:
         @classmethod
