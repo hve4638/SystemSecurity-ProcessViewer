@@ -1,1 +1,1 @@
-from .app import FileExplorer
+from .main import GUimain

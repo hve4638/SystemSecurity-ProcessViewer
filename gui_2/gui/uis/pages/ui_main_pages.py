@@ -1,22 +1,9 @@
-# ///////////////////////////////////////////////////////////////
-#
-# BY: WANDERSON M.PIMENTA
-# PROJECT MADE WITH: Qt Designer and PySide6
-# V: 1.0.0
-#
-# This project can be used freely for all uses, as long as they maintain the
-# respective credits only in the Python scripts, any information in the visual
-# interface (GUI) can be modified without any implication.
-#
-# There are limitations on Qt licenses if you want to use your products
-# commercially, I recommend reading them on the official website:
-# https://doc.qt.io/qtforpython/licenses.html
-#
-# ///////////////////////////////////////////////////////////////
-
 # IMPORT QT CORE
 # ///////////////////////////////////////////////////////////////
-from qt_core import *
+from .qt_core import *
+from qt_core import QFileSystemModel, QTreeView, QVBoxLayout
+from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMessageBox
 
 
 class Ui_MainPages(object):
@@ -32,42 +19,9 @@ class Ui_MainPages(object):
         self.pages.setObjectName(u"pages")
         self.page_1 = QWidget()
         self.page_1.setObjectName(u"page_1")
-        self.page_1.setStyleSheet(u"font-size: 14pt")
-        self.page_1_layout = QVBoxLayout(self.page_1)
-        self.page_1_layout.setSpacing(5)
-        self.page_1_layout.setObjectName(u"page_1_layout")
-        self.page_1_layout.setContentsMargins(5, 5, 5, 5)
-        self.welcome_base = QFrame(self.page_1)
-        self.welcome_base.setObjectName(u"welcome_base")
-        self.welcome_base.setMinimumSize(QSize(300, 150))
-        self.welcome_base.setMaximumSize(QSize(300, 150))
-        self.welcome_base.setFrameShape(QFrame.NoFrame)
-        self.welcome_base.setFrameShadow(QFrame.Raised)
-        self.center_page_layout = QVBoxLayout(self.welcome_base)
-        self.center_page_layout.setSpacing(10)
-        self.center_page_layout.setObjectName(u"center_page_layout")
-        self.center_page_layout.setContentsMargins(0, 0, 0, 0)
-        self.logo = QFrame(self.welcome_base)
-        self.logo.setObjectName(u"logo")
-        self.logo.setMinimumSize(QSize(300, 120))
-        self.logo.setMaximumSize(QSize(300, 120))
-        self.logo.setFrameShape(QFrame.NoFrame)
-        self.logo.setFrameShadow(QFrame.Raised)
-        self.logo_layout = QVBoxLayout(self.logo)
-        self.logo_layout.setSpacing(0)
-        self.logo_layout.setObjectName(u"logo_layout")
-        self.logo_layout.setContentsMargins(0, 0, 0, 0)
-
-        self.center_page_layout.addWidget(self.logo)
-
-        self.label = QLabel(self.welcome_base)
-        self.label.setObjectName(u"label")
-        self.label.setAlignment(Qt.AlignCenter)
-
-        self.center_page_layout.addWidget(self.label)
+        self.page_1.setStyleSheet(u"font-size: 16pt")
 
 
-        self.page_1_layout.addWidget(self.welcome_base, 0, Qt.AlignHCenter)
 
         self.pages.addWidget(self.page_1)
         self.page_2 = QWidget()
@@ -146,24 +100,62 @@ class Ui_MainPages(object):
 "}")
         self.page_3_layout = QVBoxLayout(self.page_3)
         self.page_3_layout.setObjectName(u"page_3_layout")
-        self.empty_page_label = QLabel(self.page_3)
-        self.empty_page_label.setObjectName(u"empty_page_label")
-        self.empty_page_label.setFont(font)
-        self.empty_page_label.setAlignment(Qt.AlignCenter)
-
-        self.page_3_layout.addWidget(self.empty_page_label)
 
         self.pages.addWidget(self.page_3)
 
         self.main_pages_layout.addWidget(self.pages)
+        # page_3 설정
+        self.page_3_layout = QVBoxLayout(self.page_3)
+        self.page_3_layout.setObjectName(u"page_3_layout")
 
+        # 파일 시스템 모델 생성
+        self.file_system_model = QFileSystemModel()
+        self.file_system_model.setRootPath('')  # 여기에 원하는 시작 경로를 설정할 수 있습니다.
 
-        self.retranslateUi(MainPages)
+        # QTreeView 생성
+        self.file_tree_view = QTreeView(self.page_3)
+        self.file_tree_view.setModel(self.file_system_model)  # QTreeView에 모델 설정
+        self.file_tree_view.setRootIndex(self.file_system_model.index(''))  # 여기에 원하는 시작 경로를 설정할 수 있습니다.
+        self.file_tree_view.setObjectName(u"file_tree_view")
+        self.file_tree_view.setAnimated(False)
+        self.file_tree_view.setIndentation(20)
+        self.file_tree_view.setSortingEnabled(True)
+        self.file_tree_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.file_tree_view.setStyleSheet("""
+                        QTreeView {
+                            border: none;
+                            background-color: #2C313C;
+                        }
+                        QTreeView::header {
+                        border: none; 
+                        background-color: #2C313C; /* 
+                          }
+                    """)
+        # FileTreeView에 최소 크기를 설정하는 예시
+        self.file_tree_view.setMinimumSize(1300, 600)
+
+        # page_3_layout에 file_tree_view를 추가
+        self.page_3_layout.addWidget(self.file_tree_view)
+        # QTreeView의 헤더를 가져와서 설정
+        header = self.file_tree_view.header()
+
+        # 첫 번째 열의 너비를 내용에 맞게 조정
+        header.resizeSection(0, header.sectionSizeHint(0))
+
+        # 모든 열이 내용에 맞게 자동으로 조정되도록 설정
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
+
+        # 또는 특정 열을 사용 가능한 공간에 맞춰서 스트레치하도록 설정
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
+
+        # Enable the context menu for the file_tree_view
+        self.file_tree_view.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.file_tree_view.customContextMenuRequested.connect(self.openContextMenu)
 
         self.pages.setCurrentIndex(0)
 
-
         QMetaObject.connectSlotsByName(MainPages)
+
     # setupUi
 
     def retranslateUi(self, MainPages):
@@ -173,3 +165,65 @@ class Ui_MainPages(object):
         self.empty_page_label.setText(QCoreApplication.translate("MainPages", u"Empty Page", None))
     # retranslateUi
 
+#우클릭 이벤트
+    def openContextMenu(self, position):
+
+        menu = QMenu()
+
+        # Add actions to the menu
+        action_virus_total = QAction("Virus Total", self.file_tree_view)
+        action_detailed_info = QAction("상세정보", self.file_tree_view)
+
+        menu.addAction(action_virus_total)
+        menu.addAction(action_detailed_info)
+
+        action_virus_total.triggered.connect(self.virus_total_clicked)
+        action_detailed_info.triggered.connect(self.detailed_info_clicked)
+
+        menu.exec_(self.file_tree_view.viewport().mapToGlobal(position))
+
+    def virus_total_clicked(self):
+        success_msg = QMessageBox()
+        success_msg.setIcon(QMessageBox.Information)
+        success_msg.setText("성공")  # Message displayed in the QMessageBox
+        success_msg.setWindowTitle("Virus Total 확인")  # Title of the QMessageBox
+        success_msg.setStandardButtons(QMessageBox.Ok)
+        spacer = QSpacerItem(500, 300, QSizePolicy.Minimum, QSizePolicy.Expanding)  # Change size as needed
+        layout = success_msg.layout()
+        layout.addItem(spacer, layout.rowCount(), 0, 1, layout.columnCount())
+
+        # Display the QMessageBox
+        success_msg.exec_()
+
+        print("Virus Total Clicked")
+
+    def detailed_info_clicked(self):
+        selected_indexes = self.file_tree_view.selectionModel().selectedIndexes()
+        selected_indexes = [index for index in selected_indexes if index.column() == 0]
+
+        if selected_indexes:
+            index = selected_indexes[0]  # 첫 번째 선택된 항목
+            file_info = self.file_system_model.fileInfo(index)
+
+            file_details = (
+                f"파일 이름: {file_info.fileName()}\n"
+                f"파일 경로: {file_info.filePath()}\n"
+                f"파일 크기: {file_info.size()} 바이트\n"
+                f"마지막 변경 날짜: {file_info.lastModified().toString('yyyy-MM-dd hh:mm:ss')}\n"
+                f"생성 날짜: {file_info.birthTime().toString('yyyy-MM-dd hh:mm:ss')}"
+            )
+
+            # QMessageBox를 생성하고 설정합니다.
+            detailed_info_msg = QMessageBox()
+            detailed_info_msg.setIcon(QMessageBox.Information)
+            detailed_info_msg.setText(file_details)
+            detailed_info_msg.setWindowTitle("파일 상세 정보")
+            detailed_info_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+            # QMessageBox를 실행합니다.
+            retval = detailed_info_msg.exec_()
+
+            if retval == QMessageBox.Ok:
+                print("확인 버튼이 클릭되었습니다.")
+
+                #여기까지

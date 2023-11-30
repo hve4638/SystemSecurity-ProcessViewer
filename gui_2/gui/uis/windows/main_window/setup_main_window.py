@@ -1,57 +1,50 @@
-# ///////////////////////////////////////////////////////////////
-#
-# BY: WANDERSON M.PIMENTA
-# PROJECT MADE WITH: Qt Designer and PySide6
-# V: 1.0.0
-#
-# This project can be used freely for all uses, as long as they maintain the
-# respective credits only in the Python scripts, any information in the visual
-# interface (GUI) can be modified without any implication.
-#
-# There are limitations on Qt licenses if you want to use your products
-# commercially, I recommend reading them on the official website:
-# https://doc.qt.io/qtforpython/licenses.html
-#
-# ///////////////////////////////////////////////////////////////
-
 # IMPORT PACKAGES AND MODULES
 # ///////////////////////////////////////////////////////////////
-from gui.widgets.py_table_widget.py_table_widget import PyTableWidget
+from gui_2.gui.widgets.py_table_widget.py_table_widget import PyTableWidget
 from .functions_main_window import *
+
 import sys
 import os
+
 from PySide6.QtWidgets import QHeaderView
 from PyQt6.QtWidgets import QApplication, QLabel, QPushButton, QWidget, QHBoxLayout, QCheckBox, QTableWidgetItem
 from PyQt6.QtGui import QPixmap, QIcon, QMovie
+from PyQt6.QtCore import QThread, QTimer
+
 # IMPORT QT CORE
 # ///////////////////////////////////////////////////////////////
-from qt_core import *
+from .qt_core import *
 
 # IMPORT SETTINGS
 # ///////////////////////////////////////////////////////////////
-from gui.core.json_settings import Settings
+from gui_2.gui.core.json_settings import Settings
 
 # IMPORT THEME COLORS
 # ///////////////////////////////////////////////////////////////
-from gui.core.json_themes import Themes
+from gui_2.gui.core.json_themes import Themes
 
 # IMPORT PY ONE DARK WIDGETS
 # ///////////////////////////////////////////////////////////////
-from gui.widgets import *
+from gui_2.gui.widgets import *
 
 # LOAD UI MAIN
 # ///////////////////////////////////////////////////////////////
-from .ui_main import *
+from . ui_main import *
 
 # MAIN FUNCTIONS
 # ///////////////////////////////////////////////////////////////
-from .functions_main_window import *
+from . functions_main_window import *
+
+from PyQt6.QtCore import pyqtSignal
+
+# SecurityCheckThread 클래스 정의
 
 
 # PY WINDOW
 # ///////////////////////////////////////////////////////////////
 class SetupMainWindow:
-    def __init__(self):
+    def __init__(self, front_api):
+        self.api = front_api
         super().__init__()
         # SETUP MAIN WINDOw
         # Load widgets from "gui\uis\main_window\ui_main.py"
@@ -63,12 +56,12 @@ class SetupMainWindow:
     # ///////////////////////////////////////////////////////////////
     add_left_menus = [
         {
-            "btn_icon": "icon_home.svg",
-            "btn_id": "btn_home",
-            "btn_text": "Home",
-            "btn_tooltip": "Home page",
-            "show_top": True,
-            "is_active": True
+            "btn_icon" : "icon_home.svg",
+            "btn_id" : "btn_home",
+            "btn_text" : "Home",
+            "btn_tooltip" : "Home page",
+            "show_top" : True,
+            "is_active" : True
         },
         {
             "btn_icon": "icon_file.svg",
@@ -88,20 +81,20 @@ class SetupMainWindow:
         },
 
         {
-            "btn_icon": "icon_info.svg",
-            "btn_id": "btn_info",
-            "btn_text": "Information",
-            "btn_tooltip": "Open informations",
-            "show_top": False,
-            "is_active": False
+            "btn_icon" : "icon_info.svg",
+            "btn_id" : "btn_info",
+            "btn_text" : "Information",
+            "btn_tooltip" : "Open informations",
+            "show_top" : False,
+            "is_active" : False
         },
         {
-            "btn_icon": "icon_settings.svg",
-            "btn_id": "btn_settings",
-            "btn_text": "Settings",
-            "btn_tooltip": "Open settings",
-            "show_top": False,
-            "is_active": False
+            "btn_icon" : "icon_settings.svg",
+            "btn_id" : "btn_settings",
+            "btn_text" : "Settings",
+            "btn_tooltip" : "Open settings",
+            "show_top" : False,
+            "is_active" : False
         }
     ]
 
@@ -109,16 +102,16 @@ class SetupMainWindow:
     # ///////////////////////////////////////////////////////////////
     add_title_bar_menus = [
         {
-            "btn_icon": "icon_search.svg",
-            "btn_id": "btn_search",
-            "btn_tooltip": "Search",
-            "is_active": False
+            "btn_icon" : "icon_search.svg",
+            "btn_id" : "btn_search",
+            "btn_tooltip" : "Search",
+            "is_active" : False
         },
         {
-            "btn_icon": "icon_settings.svg",
-            "btn_id": "btn_top_settings",
-            "btn_tooltip": "Top settings",
-            "is_active": False
+            "btn_icon" : "icon_settings.svg",
+            "btn_id" : "btn_top_settings",
+            "btn_tooltip" : "Top settings",
+            "is_active" : False
         }
     ]
 
@@ -180,7 +173,7 @@ class SetupMainWindow:
         if self.settings["custom_title_bar"]:
             self.ui.title_bar.set_title(self.settings["app_name"])
         else:
-            self.ui.title_bar.set_title("Welcome to PyOneDark")
+            self.ui.title_bar.set_title("")
 
         # LEFT COLUMN SET SIGNALS
         # ///////////////////////////////////////////////////////////////
@@ -237,86 +230,124 @@ class SetupMainWindow:
         # ///////////////////////////////////////////////////////////////
 
         # PAGE 1 - ADD LOGO TO MAIN PAGE
+        # 홈 페이지에 버튼 추가
+        self.homeButton = QPushButton("KISA Check", self.ui.load_pages.page_1)
+        self.homeButton.setMinimumHeight(40) \
+            # PyPushButton 스타일 적용
+        self.homeButton.setStyleSheet(f"""
+            QPushButton {{
+                border-radius: 8px;
+                color: {self.themes["app_color"]["text_foreground"]};
+                background-color: {self.themes["app_color"]["dark_one"]};
+            }}
+            QPushButton:hover {{
+                background-color: {self.themes["app_color"]["dark_three"]};
+            }}
+            QPushButton:pressed {{
+                background-color: {self.themes["app_color"]["dark_four"]};
+            }}
+        """)
+
+
+        # 버튼 크기 설정 - 부모 위젯의 너비의 1/4
+        parent_width = self.ui.load_pages.page_1.width()
+        button_width = parent_width / 2
+        button_height = 60  # 버튼의 높이, 필요에 따라 조정
+        self.homeButton.setFixedSize(button_width, button_height)
+
+        # QVBoxLayout을 생성합니다.
+        layout = QVBoxLayout(self.ui.load_pages.page_1)
+
+        # 레이아웃의 상단에 빈 공간을 추가하여 버튼을 아래로 밀어냅니다.
+        layout.addStretch()
+
+        # 버튼을 레이아웃에 추가합니다.
+        layout.addWidget(self.homeButton, 0, Qt.AlignHCenter)
+
+        # 페이지에 레이아웃을 설정합니다.
+        self.ui.load_pages.page_1.setLayout(layout)
+        # 버튼 클릭 이벤트 연결
+        self.homeButton.clicked.connect(self.KISAButtonClick)
 
         # PAGE 2
 
         # ICON BUTTON 1
         self.icon_button_1 = PyIconButton(
-            icon_path=Functions.set_svg_icon("icon_heart.svg"),
-            parent=self,
-            app_parent=self.ui.central_widget,
-            tooltip_text="Icon button - Heart",
-            width=40,
-            height=40,
-            radius=20,
-            dark_one=self.themes["app_color"]["dark_one"],
-            icon_color=self.themes["app_color"]["icon_color"],
-            icon_color_hover=self.themes["app_color"]["icon_hover"],
-            icon_color_pressed=self.themes["app_color"]["icon_active"],
-            icon_color_active=self.themes["app_color"]["icon_active"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["pink"]
+            icon_path = Functions.set_svg_icon("icon_heart.svg"),
+            parent = self,
+            app_parent = self.ui.central_widget,
+            tooltip_text = "Icon button - Heart",
+            width = 40,
+            height = 40,
+            radius = 20,
+            dark_one = self.themes["app_color"]["dark_one"],
+            icon_color = self.themes["app_color"]["icon_color"],
+            icon_color_hover = self.themes["app_color"]["icon_hover"],
+            icon_color_pressed = self.themes["app_color"]["icon_active"],
+            icon_color_active = self.themes["app_color"]["icon_active"],
+            bg_color = self.themes["app_color"]["dark_one"],
+            bg_color_hover = self.themes["app_color"]["dark_three"],
+            bg_color_pressed = self.themes["app_color"]["pink"]
         )
 
         # ICON BUTTON 2
         self.icon_button_2 = PyIconButton(
-            icon_path=Functions.set_svg_icon("icon_add_user.svg"),
-            parent=self,
-            app_parent=self.ui.central_widget,
-            tooltip_text="BTN with tooltip",
-            width=40,
-            height=40,
-            radius=8,
-            dark_one=self.themes["app_color"]["dark_one"],
-            icon_color=self.themes["app_color"]["icon_color"],
-            icon_color_hover=self.themes["app_color"]["icon_hover"],
-            icon_color_pressed=self.themes["app_color"]["white"],
-            icon_color_active=self.themes["app_color"]["icon_active"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["green"],
+            icon_path = Functions.set_svg_icon("icon_add_user.svg"),
+            parent = self,
+            app_parent = self.ui.central_widget,
+            tooltip_text = "BTN with tooltip",
+            width = 40,
+            height = 40,
+            radius = 8,
+            dark_one = self.themes["app_color"]["dark_one"],
+            icon_color = self.themes["app_color"]["icon_color"],
+            icon_color_hover = self.themes["app_color"]["icon_hover"],
+            icon_color_pressed = self.themes["app_color"]["white"],
+            icon_color_active = self.themes["app_color"]["icon_active"],
+            bg_color = self.themes["app_color"]["dark_one"],
+            bg_color_hover = self.themes["app_color"]["dark_three"],
+            bg_color_pressed = self.themes["app_color"]["green"],
         )
 
         # ICON BUTTON 3
         self.icon_button_3 = PyIconButton(
-            icon_path=Functions.set_svg_icon("icon_add_user.svg"),
-            parent=self,
-            app_parent=self.ui.central_widget,
-            tooltip_text="BTN actived! (is_actived = True)",
-            width=40,
-            height=40,
-            radius=8,
-            dark_one=self.themes["app_color"]["dark_one"],
-            icon_color=self.themes["app_color"]["icon_color"],
-            icon_color_hover=self.themes["app_color"]["icon_hover"],
-            icon_color_pressed=self.themes["app_color"]["white"],
-            icon_color_active=self.themes["app_color"]["icon_active"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["context_color"],
-            is_active=True
+            icon_path = Functions.set_svg_icon("icon_add_user.svg"),
+            parent = self,
+            app_parent = self.ui.central_widget,
+            tooltip_text = "BTN actived! (is_actived = True)",
+            width = 40,
+            height = 40,
+            radius = 8,
+            dark_one = self.themes["app_color"]["dark_one"],
+            icon_color = self.themes["app_color"]["icon_color"],
+            icon_color_hover = self.themes["app_color"]["icon_hover"],
+            icon_color_pressed = self.themes["app_color"]["white"],
+            icon_color_active = self.themes["app_color"]["icon_active"],
+            bg_color = self.themes["app_color"]["dark_one"],
+            bg_color_hover = self.themes["app_color"]["dark_three"],
+            bg_color_pressed = self.themes["app_color"]["context_color"],
+            is_active = True
         )
 
         # PUSH BUTTON 1
         self.push_button_1 = PyPushButton(
-            text="Button Without Icon",
-            radius=8,
-            color=self.themes["app_color"]["text_foreground"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"]
+            text = "Button Without Icon",
+            radius  =8,
+            color = self.themes["app_color"]["text_foreground"],
+            bg_color = self.themes["app_color"]["dark_one"],
+            bg_color_hover = self.themes["app_color"]["dark_three"],
+            bg_color_pressed = self.themes["app_color"]["dark_four"]
         )
         self.push_button_1.setMinimumHeight(40)
 
         # PUSH BUTTON 2
         self.push_button_2 = PyPushButton(
-            text="Button With Icon",
-            radius=8,
-            color=self.themes["app_color"]["text_foreground"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_hover=self.themes["app_color"]["dark_three"],
-            bg_color_pressed=self.themes["app_color"]["dark_four"]
+            text = "Button With Icon",
+            radius = 8,
+            color = self.themes["app_color"]["text_foreground"],
+            bg_color = self.themes["app_color"]["dark_one"],
+            bg_color_hover = self.themes["app_color"]["dark_three"],
+            bg_color_pressed = self.themes["app_color"]["dark_four"]
         )
         self.icon_2 = QIcon(Functions.set_svg_icon("icon_settings.svg"))
         self.push_button_2.setMinimumHeight(40)
@@ -324,39 +355,39 @@ class SetupMainWindow:
 
         # PY LINE EDIT
         self.line_edit = PyLineEdit(
-            text="",
-            place_holder_text="Place holder text",
-            radius=8,
-            border_size=2,
-            color=self.themes["app_color"]["text_foreground"],
-            selection_color=self.themes["app_color"]["white"],
-            bg_color=self.themes["app_color"]["dark_one"],
-            bg_color_active=self.themes["app_color"]["dark_three"],
-            context_color=self.themes["app_color"]["context_color"]
+            text = "",
+            place_holder_text = "Place holder text",
+            radius = 8,
+            border_size = 2,
+            color = self.themes["app_color"]["text_foreground"],
+            selection_color = self.themes["app_color"]["white"],
+            bg_color = self.themes["app_color"]["dark_one"],
+            bg_color_active = self.themes["app_color"]["dark_three"],
+            context_color = self.themes["app_color"]["context_color"]
         )
         self.line_edit.setMinimumHeight(30)
 
         # TOGGLE BUTTON
         self.toggle_button = PyToggle(
-            width=50,
-            bg_color=self.themes["app_color"]["dark_two"],
-            circle_color=self.themes["app_color"]["icon_color"],
-            active_color=self.themes["app_color"]["context_color"]
+            width = 50,
+            bg_color = self.themes["app_color"]["dark_two"],
+            circle_color = self.themes["app_color"]["icon_color"],
+            active_color = self.themes["app_color"]["context_color"]
         )
 
         # TABLE WIDGETS
         self.table_widget = PyTableWidget(
-            radius=8,
-            color=self.themes["app_color"]["text_foreground"],
-            selection_color=self.themes["app_color"]["context_color"],
-            bg_color=self.themes["app_color"]["bg_two"],
-            header_horizontal_color=self.themes["app_color"]["dark_two"],
-            header_vertical_color=self.themes["app_color"]["bg_three"],
-            bottom_line_color=self.themes["app_color"]["bg_three"],
-            grid_line_color=self.themes["app_color"]["bg_one"],
-            scroll_bar_bg_color=self.themes["app_color"]["bg_one"],
-            scroll_bar_btn_color=self.themes["app_color"]["dark_four"],
-            context_color=self.themes["app_color"]["context_color"]
+            radius = 8,
+            color = self.themes["app_color"]["text_foreground"],
+            selection_color = self.themes["app_color"]["context_color"],
+            bg_color = self.themes["app_color"]["bg_two"],
+            header_horizontal_color = self.themes["app_color"]["dark_two"],
+            header_vertical_color = self.themes["app_color"]["bg_three"],
+            bottom_line_color = self.themes["app_color"]["bg_three"],
+            grid_line_color = self.themes["app_color"]["bg_one"],
+            scroll_bar_bg_color = self.themes["app_color"]["bg_one"],
+            scroll_bar_btn_color = self.themes["app_color"]["dark_four"],
+            context_color = self.themes["app_color"]["context_color"]
         )
         self.table_widget.setColumnCount(4)
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
@@ -393,58 +424,71 @@ class SetupMainWindow:
         header.setSectionResizeMode(0, QHeaderView.Stretch)
         header.setSectionResizeMode(1, QHeaderView.ResizeToContents)
 
-        for x in range(10):
+        apisc = self.api.SecurityCheck
+        checklist = apisc.get_checklist()
+        for i, item in enumerate(checklist):
             row_number = self.table_widget.rowCount()
-            self.table_widget.insertRow(row_number)  # Insert row
+            self.table_widget.insertRow(row_number)
             self.table_widget.setRowHeight(row_number, 22)
+            table_item = QTableWidgetItem(str(item["name"]))
+            self.table_widget.setItem(i, 0, table_item)
+            self.set_test_status(i, "loading")  # 초기 상태를 'loading'으로 설정
 
-            # Pass 열에 검사 상태 표시
-            # 각 행의 상태를 번갈아가며 설정
-            if x % 3 == 0:
-                self.set_test_status(row_number, "loading")
-            elif x % 3 == 1:
-                self.set_test_status(row_number, "success")
-            else:
-                self.set_test_status(row_number, "failure")
 
-            # "오류 발생" 열에 텍스트 추가
-            error_item = QTableWidgetItem("오류 발생" if x % 2 == 0 else "정상")
-            self.table_widget.setItem(row_number, 2, error_item)
 
-            # "조치" 열에 버튼 추가
-            for row in range(self.table_widget.rowCount()):
-                action_button = QPushButton("조치", self)
-                action_button.setStyleSheet("""
-                    QPushButton {
-                        color: #FFFFFF; /* 텍스트 색상 */
-                        background-color: #5A5A5A; /* 배경색 */
-                        border-radius: 10px; /* 테두리 둥근 정도 */
-                        padding: 5px; /* 안쪽 여백 */
-                        border: none; /* 테두리 없음 */
-                    }
-                    QPushButton:hover {
-                        background-color: #6E6E6E; /* 마우스 오버 시 배경색 */
-                    }
-                    QPushButton:pressed {
-                        background-color: #484848; /* 클릭 시 배경색 */
-                    }
-                """)
-                action_button.clicked.connect(
-                    lambda checked=False, row=row, parent=self: parent.action_button_clicked(row))
-                self.table_widget.setCellWidget(row, 3, action_button)
+            """
+            def setup_table_widget(self):
+                # 테이블 위젯 설정 코드...
+
+                # 보안 검사 항목을 테이블에 추가
+                apisc = self.api.SecurityCheck
+                checklist = apisc.get_checklist()
+                for i, item in enumerate(checklist):
+                    row_number = self.table_widget.rowCount()
+                    self.table_widget.insertRow(row_number)  # 행 추가
+                    self.table_widget.setRowHeight(row_number, 22)
+                    table_item = QTableWidgetItem(str(item["name"]))
+                    self.table_widget.setItem(i, 0, table_item)
+            """
+
+        """
+        # 검사 결과에 따라 오류 메시지와 링크 추가
+        for i, item in enumerate(checklist):
+            check_result = self.api.SecurityCheck.get_check_result(item["id"])
+            self.add_error_item_with_link(i, check_result, "자세히 보기", "http://naver.com")
+        """
+
+        # "조치" 열에 버튼 추가
+        for row in range(self.table_widget.rowCount()):
+            action_button = QPushButton("조치", self)
+            action_button.setStyleSheet("""
+                QPushButton {
+                    color: #FFFFFF; /* 텍스트 색상 */
+                    background-color: #5A5A5A; /* 배경색 */
+                    border-radius: 10px; /* 테두리 둥근 정도 */
+                    padding: 5px; /* 안쪽 여백 */
+                    border: none; /* 테두리 없음 */
+                }
+                QPushButton:hover {
+                    background-color: #6E6E6E; /* 마우스 오버 시 배경색 */
+                }
+                QPushButton:pressed {
+                    background-color: #484848; /* 클릭 시 배경색 */
+                }
+            """)
+            action_button.clicked.connect(lambda checked=False, row=19, parent=self: parent.action_button_clicked(row))
+            self.table_widget.setCellWidget(row, 3, action_button)
+
+            # 체크리스트 항목들을 테이블 위젯에 추가
+            for i, item in enumerate(checklist):
+                table_item = QTableWidgetItem(str(item["name"]))
+                self.table_widget.setItem(i, 0, table_item)
 
             def action_button_clicked(self, row):
                 print(f"조치 버튼이 {row}번 행에서 클릭되었습니다.")
 
-        self.table_widget.setItem(0, 0, QTableWidgetItem(str("패스우드 주기적 변경")))
-        self.table_widget.setItem(1, 0, QTableWidgetItem(str("패스우드 정책")))
-        self.table_widget.setItem(2, 0, QTableWidgetItem(str("복구 콘솔에서 자동 로그온 방지")))
-        self.table_widget.setItem(3, 0, QTableWidgetItem(str("공유 폴더 제거")))
-        self.table_widget.setItem(4, 0, QTableWidgetItem(str("항목 불필요 서비스 제거")))
-        self.table_widget.setItem(5, 0, QTableWidgetItem(str("파일시스템 NTFS 포맷 설정")))
-        self.table_widget.setItem(6, 0, QTableWidgetItem(str("멀티 부팅 설정 방지")))
-        self.table_widget.setItem(7, 0, QTableWidgetItem(str("임시 인터넷 파일 삭제")))
-        self.table_widget.setItem(8, 0, QTableWidgetItem(str("최신 보안 패치")))
+
+
 
         # Kisa Page 위젯 추가
         self.ui.load_pages.row_5_layout.addWidget(self.table_widget)
@@ -504,3 +548,4 @@ class SetupMainWindow:
             self.top_right_grip.setGeometry(self.width() - 20, 5, 15, 15)
             self.bottom_left_grip.setGeometry(5, self.height() - 20, 15, 15)
             self.bottom_right_grip.setGeometry(self.width() - 20, self.height() - 20, 15, 15)
+

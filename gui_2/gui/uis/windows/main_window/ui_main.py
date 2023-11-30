@@ -16,39 +16,40 @@
 
 # IMPORT PACKAGES AND MODULES
 # ///////////////////////////////////////////////////////////////
-from gui.core.functions import Functions
+from gui_2.gui.core.functions import Functions
 
 # IMPORT QT CORE
 # ///////////////////////////////////////////////////////////////
-from qt_core import *
+from gui_2.qt_core import *
 
 # IMPORT SETTINGS
 # ///////////////////////////////////////////////////////////////
-from gui.core.json_settings import Settings
+from gui_2.gui.core.json_settings import Settings
 
 # IMPORT THEME COLORS
 # ///////////////////////////////////////////////////////////////
-from gui.core.json_themes import Themes
+from gui_2.gui.core.json_themes import Themes
 
 # IMPORT PY ONE DARK WIDGETS
 # ///////////////////////////////////////////////////////////////
-from gui.widgets import *
+from gui_2.gui.widgets import *
 
 # IMPORT SETUP MAIN WINDOW
 # ///////////////////////////////////////////////////////////////
-from . setup_main_window import *
+from gui_2.gui.uis.windows.main_window.setup_main_window import *
 
 # IMPORT MAIN WINDOW PAGES / AND SIDE BOXES FOR APP
 # ///////////////////////////////////////////////////////////////
-from gui.uis.pages.ui_main_pages import Ui_MainPages
+from gui_2.gui.uis.pages.ui_main_pages import Ui_MainPages
 
 # RIGHT COLUMN
 # ///////////////////////////////////////////////////////////////
-from gui.uis.columns.ui_right_column import Ui_RightColumn
+from gui_2.gui.uis.columns.ui_right_column import Ui_RightColumn
 
 # CREDITS
 # ///////////////////////////////////////////////////////////////
-from gui.widgets.py_credits_bar.py_credits import PyCredits
+from gui_2.gui.widgets.py_credits_bar.py_credits import PyCredits
+
 
 # PY WINDOW
 # ///////////////////////////////////////////////////////////////
@@ -84,7 +85,7 @@ class UI_MainWindow(object):
             self.central_widget_layout.setContentsMargins(10,10,10,10)
         else:
             self.central_widget_layout.setContentsMargins(0,0,0,0)
-        
+
         # LOAD PY WINDOW CUSTOM WIDGET
         # Add inside PyWindow "layout" all Widgets
         # ///////////////////////////////////////////////////////////////
@@ -95,11 +96,11 @@ class UI_MainWindow(object):
             border_color = self.themes["app_color"]["bg_two"],
             text_color = self.themes["app_color"]["text_foreground"]
         )
-        
+
         # If disable custom title bar
         if not self.settings["custom_title_bar"]:
             self.window.set_stylesheet(border_radius = 0, border_size = 0)
-        
+
         # ADD PY WINDOW TO CENTRAL WIDGET
         self.central_widget_layout.addWidget(self.window)
 
@@ -191,7 +192,7 @@ class UI_MainWindow(object):
         self.title_bar_frame.setMaximumHeight(40)
         self.title_bar_layout = QVBoxLayout(self.title_bar_frame)
         self.title_bar_layout.setContentsMargins(0,0,0,0)
-        
+
         # ADD CUSTOM TITLE BAR TO LAYOUT
         self.title_bar = PyTitleBar(
             parent,
@@ -293,7 +294,7 @@ class UI_MainWindow(object):
         self.right_app_layout.addWidget(self.title_bar_frame)
         self.right_app_layout.addWidget(self.content_area_frame)
         self.right_app_layout.addWidget(self.credits_frame)
-        
+
         # ADD WIDGETS TO "PyWindow"
         # Add here your custom widgets or default widgets
         # ///////////////////////////////////////////////////////////////

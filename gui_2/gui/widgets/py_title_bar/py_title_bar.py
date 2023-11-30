@@ -20,11 +20,11 @@ from qt_core import *
 
 # IMPORT FUNCTIONS
 # ///////////////////////////////////////////////////////////////
-from gui.core.functions import *
+from gui_2.gui.core.functions import *
 
 # IMPORT SETTINGS
 # ///////////////////////////////////////////////////////////////
-from gui.core.json_settings import Settings
+from gui_2.gui.core.json_settings import Settings
 
 # IMPORT DIV
 # ///////////////////////////////////////////////////////////////
