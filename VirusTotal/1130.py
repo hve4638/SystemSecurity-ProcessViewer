@@ -48,7 +48,7 @@ def virustotal_progress():
     while True:
         print("progress: enter")
         token, filename = q.get(block=True, timeout=None)                       # q가 빌때까지 token과 filename 가져옴  
-        print("progress: get")
+        print(f"progress: get")
         
         info = container[token]                                                 # token과 결합된 상태정보 
         info["status"] = "progress"                                             # 상태 progress로 바꿈
@@ -87,47 +87,34 @@ def virustotal_progress():
                  num = num + 1
 
              info["status"] = "done"
-             
-             #await aynco.sleep(15)                                                          # 무료버전은 1분당 파일 전송 4회로 제한되어있음.
+        except Exception:
+            pass
+            #await aynco.sleep(15)                                                          # 무료버전은 1분당 파일 전송 4회로 제한되어있음.
         finally:
             if info["status"] != "done":
                 info["status"] = "error"
-    
 
-async def start_virustotal_progress():
-    await virustotal_progress()
-
-async def virustotal_get_result(token:str, remove_when_done:bool=False)->dict:
+def virustotal_get_result(token:str, remove_when_done:bool=False)->dict:
      result = container[token]
      #print(result)
-     if remove_when_done:
+     if remove_when_done and (result["status"] == "done" or result["status"] == "error"):
         del container[token]
      return result
-     
-async def main():
-    asyncio.create_task(start_virustotal_progress())
-    a = virustotal_upload("example.txt")
-    b = virustotal_upload("example1.txt")
-    time.sleep(20)
-    print(container)
-
-    #time.sleep(60)
-    #await virustotal_get_result(a)
-    #await virustotal_get_result(b)
-    #await virustotal_get_result(c)
-    #await virustotal_get_result(d)
-    #await virustotal_get_result(e)
-    #await virustotal_get_result(c)
 
 if __name__ == "__main__":
-    file = "./1130.py"
-    s = open(file, 'rb')
-
-    exit(0)
     progress = Thread(target=virustotal_progress)
     progress.start()
-    virustotal_upload("./1130.py")
-    time.sleep(3)
+    token = virustotal_upload("./1130.py")
+    while True:
+        result = virustotal_get_result(token, remove_when_done=True)
+        print(result)
+        match result["status"]:
+            case "error" | "done":
+                break
+            case _:
+                pass
+        time.sleep(1)
+    time.sleep(10)
     raise Exception()
     pass
     
