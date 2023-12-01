@@ -76,12 +76,14 @@ type : solve (관리자 권한 필요)
 """
 def solve_pc19(): # PC19 외부 연결 차단
     reg_handle = winreg.ConnectRegistry(None, winreg.HKEY_LOCAL_MACHINE)
-    
+
     # path of registry
-    registry_path = r'SYSTEM\CurrentControlSet\Control\Terminal Server'
+    registry_path = r'SYSTEM\CurrentControlSet\Control\Remote Assistance'
     key = winreg.OpenKey(reg_handle, registry_path, 0, winreg.KEY_WRITE)
     # name of specific value
-    value_name = 'fDenyTSConnections'
+    value_name = 'fAllowToGetHelp'
     
-    winreg.SetValueEx(key, value_name, 0, winreg.REG_DWORD, 0x00000001)
+    winreg.SetValueEx(key, value_name, 0, winreg.REG_DWORD, 0x00000000)
+
+
 
