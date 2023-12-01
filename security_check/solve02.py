@@ -1,6 +1,6 @@
 import winreg
 import re, os
-
+import subprocess
 
 '''
 PC10에 대한 조치 함수
