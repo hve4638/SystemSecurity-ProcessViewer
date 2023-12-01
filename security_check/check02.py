@@ -444,26 +444,28 @@ def check_pc13():
     return results
 
 
+
+
 """
 PC19에 대한 검사를 수행
 """
 def check_pc19():
     results = Queue()
     # path of registry
-    registry_path = r'SYSTEM\CurrentControlSet\Control\Terminal Server'
+    registry_path = r'SYSTEM\CurrentControlSet\Control\Remote Assistance'
     # name of specific value
-    value_name = 'fDenyTSConnections'
+    value_name = 'fAllowToGetHelp'
     Connection_value = get_LMregistry_value(registry_path, value_name)
 
     if Connection_value is not None:
-        if Connection_value == 1:
+        if Connection_value == 0:
             pass
-        elif Connection_value == 0:
+        elif Connection_value == 1:
             results.put({
                 "id" : "PC-19",
                 "sub-id" : "PC-19-NOT_DENYREMOTECONN",
                 "type" : "error",
-                "reason" : "외부 데스크톱 연결이 차단되어 있지 않습니다."
+                "reason" : "원격 지원이 차단되어 있지 않습니다."
             })
         else:
             results.put({
@@ -480,6 +482,7 @@ def check_pc19():
             "reason" : "관련 레지스트리 값이 존재하지 않습니다."
         })
     return results
+
 
 
 if __name__ == "__main__":
