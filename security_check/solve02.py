@@ -7,10 +7,7 @@ PC10에 대한 조치 함수
     # link
 '''
 def solve_pc10():
-    try:
-        subprocess.run(['lusmgr.msc'], shell=True, check=True)
-    except subprocess.CalledProcessError:
-        user32.MessageBoxW(None, '관리 창을 띄울 수 없습니다', 'Error!', 0)
+    user32.MessageBoxW(None, '백신 프로그램 또는 백신 프로그램의 실시간 감지가 동작하고 있지 않습니다.', 'Warning', 0)
 
 
 
