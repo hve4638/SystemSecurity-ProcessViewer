@@ -1,6 +1,7 @@
 import winreg
 import re, os
-import subprocess
+import ctypes
+user32 = ctypes.WinDLL('user32')
 
 '''
 PC10에 대한 조치 함수
@@ -8,8 +9,6 @@ PC10에 대한 조치 함수
 '''
 def solve_pc10():
     user32.MessageBoxW(None, '백신 프로그램 또는 백신 프로그램의 실시간 감지가 동작하고 있지 않습니다.', 'Warning', 0)
-
-
 
 
 '''
