@@ -6,6 +6,13 @@ import re, os
 PC10에 대한 조치 함수
     # link
 '''
+def solve_pc10():
+    try:
+        subprocess.run(['lusmgr.msc'], shell=True, check=True)
+    except subprocess.CalledProcessError:
+        user32.MessageBoxW(None, '관리 창을 띄울 수 없습니다', 'Error!', 0)
+
+
 
 
 '''
