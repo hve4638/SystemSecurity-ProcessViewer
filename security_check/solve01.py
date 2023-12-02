@@ -96,6 +96,10 @@ def solve_pc15():
     rname = r"securitylevel"
     set_registry_value(rpath, rname, 0)
 
+
+def solve_pc16():
+    pass
+
 if __name__ == "__main__":
     #subprocess.run(['lusmgr.msc'], shell=True, check=True)
     #subprocess.run(['net accounts','/MINPWLEN:0'], shell=True, check=True)
