@@ -37,3 +37,10 @@ type : link
 def solve_pc08_B():
     url = "https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html"
     webbrowser.open(url)
+
+"""
+PC-09에 대한 조치 함수
+type : link
+"""     
+def solve_pc09():
+    subprocess.run('start ms-settings:windowsdefender', shell=True, check=True)
