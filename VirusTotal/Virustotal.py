@@ -14,6 +14,7 @@ container = {}
 q = queue.Queue()
 
 def get_file_path(filename):
+    return filename
     current_directory = os.getcwd()
     file_path = os.path.join(current_directory + "/" + filename)
 
@@ -43,20 +44,20 @@ def virustotal_upload(filename:str):
 
 def virustotal_progress():
     while True:
-        print("progress: enter")
         token, filename = q.get(block=True, timeout=None)  # q가 빌 때까지 token과 filename 가져옴
-        print(f"progress: get")
         
         info = container[token]  # token과 결합된 상태 정보
         info["status"] = "progress"  # 상태를 progress로 변경
 
         try:
             file = get_file_path(filename)
-            file_obj = open(file, 'rb')  # 파일 열기
-            files = {'file': (file, file_obj)}
+            with open(file, 'rb') as file_obj:
+                #file_obj = open(file, 'rb')  # 파일 열기
+                files = {'file': (file, file_obj)}
 
-            url_scan_params = {'apikey': my_apikey}
-            response_scan = requests.post(url_scan, files=files, params=url_scan_params)  # 바이러스토탈 파일 스캔 시작
+                url_scan_params = {'apikey': my_apikey}
+                response_scan = requests.post(url_scan, files=files, params=url_scan_params)  # 바이러스토탈 파일 스캔 시작
+
             result_scan = response_scan.json()
             scan_resource = result_scan['resource']
 
@@ -84,21 +85,22 @@ def virustotal_progress():
                 num = num + 1
 
             info["status"] = "done"
-            file_obj.close()  # 파일 닫기
             time.sleep(20)
         except Exception:
             pass
         finally:
             if info["status"] != "done":
                 info["status"] = "error"
-                
-                file_obj.close()  # 파일 닫기
 
 def virustotal_get_result(token:str, remove_when_done:bool=False)->dict:
      result = container[token]
      if remove_when_done and (result["status"] == "done" or result["status"] == "error"):
         del container[token]
      return result
+
+def virustotal_init():
+    progress = Thread(target=virustotal_progress)
+    progress.start()
 
 if __name__ == "__main__":
     progress = Thread(target=virustotal_progress)

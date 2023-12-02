@@ -1,1 +1,1 @@
-from .new_virus import virustotal_upload, virustotal_get_result
+from .Virustotal import virustotal_upload, virustotal_get_result, virustotal_init

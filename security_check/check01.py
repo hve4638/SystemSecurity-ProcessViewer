@@ -1,6 +1,9 @@
 import re, os
 from queue import Queue
-from .reg import *
+if __name__ == "__main__":
+    from reg import *
+else:
+    from .reg import *
 
 # 이후 파일로 분리해 저장 필요
 SERVICES_UNUSED = ["CryptSvc", "Dhcp", "Dnscache", "WerSvc", "hidserv", "Spooler", "RemoteRegistry"]
@@ -211,6 +214,22 @@ def check_pc05():
 
     return results
 
+def check_pc15():
+    results = Queue()
+    rpath = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\SetUp\recoveryconsole"
+    rname = r"securitylevel"
+    val = get_registry_value(rpath, rname)
+
+    if val != 0:
+        results.put({
+            "id" : "PC-15",
+            "sub-id" : "PC-16-INVALID-SECURITY-LEVEL",
+            "type" : "error",
+            "reason" : "자동 관리 로그인 옵션이 활성화되어 있습니다",
+            "addition" : {}
+        })
+    return results
+
 re_volume = re.compile(r"^([A-Z])\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+([^\s]+)\s+.*$")
 def check_pc16():
     results = Queue()
@@ -236,11 +255,12 @@ def check_pc16():
     return results
 
 if __name__ == "__main__":
-    test_check(check_pc04())
     test_check(check_pc01())
     test_check(check_pc02())
     test_check(check_pc03())
+    test_check(check_pc04())
     test_check(check_pc05())
+    test_check(check_pc15())
     test_check(check_pc16())
 
     #"Get-Service"

@@ -1,3 +1,4 @@
+import os
 import time
 from queue import Queue
 from datetime import datetime
@@ -15,7 +16,7 @@ class FrontAPI:
             raise Exception("initialize()는 한번만 호출되어야 합니다")
         cls.initialized = True
 
-        #vt.virustotal_init()
+        vt.virustotal_init()
 
     class SecurityCheck:
         @classmethod
@@ -172,6 +173,21 @@ class FrontAPI:
     
     class VirusTotal:
         @classmethod
+        def mock_upload_files(cls, filenames):
+            pass
+            def getlog():
+                yield "start\n"
+                yield ""
+                yield ""
+                yield ""
+                yield f'detected! (file:"example.exe")\n'
+                yield ""
+                yield ""
+                yield f'detected! (file:"example2.exe")\n'
+                yield "work done\n"
+                yield None
+
+        @classmethod
         def upload_file(cls, filename:str):
             return cls.upload_files([filename])
 
@@ -181,16 +197,21 @@ class FrontAPI:
             def getlog():
                 for filename, token in tokens:
                     while True:
-                        result = vt.virustotal_get_result(filename, True)
+                        result = vt.virustotal_get_result(token, True)
                         match result["status"]:
-                            case "done" | "error":
+                            case "error":
+                                yield f'error occured (file:"{filename}")\n'
+                                break
+                            case "done":
                                 if result["detected"]:
                                     yield f'detected! (file:"{filename}")\n'
+                                else:
+                                    yield f'normal (file:"{filename}")\n'
                                 break
                             case _:
                                 yield ""
+                                time.sleep(0)
                                 continue
-                    time.sleep(0)
                 yield "work done\n"
                 yield None
 
@@ -199,3 +220,17 @@ class FrontAPI:
                 tokens.append((filename, token))
 
             return getlog
+
+        @classmethod
+        def upload_directory(cls, dirname:str):
+            def __get_recursively(directory):
+                filenames = []
+
+                for root, _, files in os.walk(directory):
+                    for file in files:
+                        file_path = os.path.join(root, file)
+                        filenames.append(file_path)
+
+                return filenames
+            
+            return cls.upload_files(__get_recursively(dirname))
