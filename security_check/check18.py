@@ -2,7 +2,7 @@ import winreg
 import queue
 
 def check_pc18():
-    results = queue.Queue()
+    results = Queue()
 
     # registry key path and name
     key_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\Internet Settings\Cache"
