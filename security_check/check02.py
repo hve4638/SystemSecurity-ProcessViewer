@@ -309,7 +309,6 @@ def check_pc11():
     return results
 
 
-
 """
 PC12에 대한 검사를 수행
 """
@@ -322,21 +321,24 @@ def check_pc12():
     registry_path = r'Control Panel\Desktop'
     # name of specific value
     value_name = 'ScreenSaveActive'
-    SaveActive_value = int(get_CUSERregistry_value(registry_path, value_name))
+    
+    SaveActive_value = get_CUSERregistry_value(registry_path, value_name)
 
     # path of registry
     registry_path = r'Control Panel\Desktop'
     # name of specific value
     value_name = 'ScreenSaverIsSecure'
-    SaverIsSecure_value = int(get_CUSERregistry_value(registry_path, value_name))
+    SaverIsSecure_value = get_CUSERregistry_value(registry_path, value_name)
 
     # path of registry
     registry_path = r'Control Panel\Desktop'
     # name of specific value
     value_name = 'ScreenSaveTimeout'
-    SaveTimeout_value = int(get_CUSERregistry_value(registry_path, value_name))
+    SaveTimeout_value = get_CUSERregistry_value(registry_path, value_name)
 
+    
     if SaveActive_value is not None:
+        SaveActive_value = int(SaveActive_value)
         if SaveActive_value == 1:
             pass
         elif SaveActive_value == 0:
@@ -361,6 +363,7 @@ def check_pc12():
             "reason" : "화면 보호기 활성화 관련 레지스트리 값이 존재하지 않습니다."
         })
     if SaverIsSecure_value is not None:
+        SaverIsSecure_value = int(SaverIsSecure_value)
         if SaverIsSecure_value == 1:
             pass
         elif SaverIsSecure_value == 0:
@@ -385,6 +388,7 @@ def check_pc12():
                 "reason" : "화면 보호기 암호 설정 관련 레지스트리 값이 존재하지 않습니다."
         })
     if SaveTimeout_value is not None:
+        SaveTimeout_value = int(SaveTimeout_value)
         if SaveTimeout_value <= 600:
             pass
         elif SaveTimeout_value > 600:
