@@ -7,7 +7,6 @@ PC-06에 대한 조치 함수
 type : link
 """
 def solve_06():
-
     # Run the specified command
     os.system("start ms-settings:windowsupdate")
 
