@@ -10,6 +10,7 @@ from urllib.request import urlopen
 # check_pc06 : HOT FIX 등 최신 보안패치 적용 확인
 # check_pc07 : 최신 서비스팩 적용 확인
 # check_pc08 : MS-Office, 한글, 어도비 아크로뱃 등의 응용프로그램에 대한 최신 보안패치 적용 확인
+# check_pc09 : Windows 보호 업데이트 주기적 업데이트
 
 class CatalogParser(HTMLParser):
     def __init__(self):
@@ -430,6 +431,35 @@ def check_pc08():
         
     return results
 
+# Windows 보호 업데이트 주기적 업데이트
+def check_pc09():
+    results = Queue()
+    powershell_script = '''
+    $updateSession = New-Object -ComObject Microsoft.Update.Session
+    $updateSearcher = $updateSession.CreateUpdateSearcher()
+
+    $searchResult = $updateSearcher.Search("IsInstalled=0")
+
+    if ($searchResult.Updates.Count -gt 0) {
+        Write-Output "1"  # 보안 업데이트가 있음
+    } else {
+        Write-Output "0"  # 보안 업데이트가 없음
+    }
+    '''
+
+    result = subprocess.run(['powershell', '-Command', powershell_script], capture_output=True, text=True, check=True)
+
+    has_security_updates = int(result.stdout.strip())
+    if has_security_updates == 1:
+        results.put({
+            "id" : "PC-09",
+            "sub-id" : "PC-09-security-update",
+            "type" : "error",
+            "reason" : "보안 업데이트 필요"
+        })
+
+    return results
+
 def test_check(results:Queue):
     while not results.empty():
         print(results.get())
@@ -438,3 +468,4 @@ if __name__ == "__main__":
     test_check(check_pc06())
     test_check(check_pc07())
     test_check(check_pc08())
+    test_check(check_pc09())
