@@ -30,3 +30,11 @@ def solve_08_A():
 
     hancom_studio_path = value
     subprocess.run([hancom_studio_path], check=True)       
+
+"""
+PC-08(어도비 어크로뱃)에 대한 조치 함수
+type : link
+"""
+def solve_08_B():
+    url = "https://www.adobe.com/devnet-docs/acrobatetk/tools/ReleaseNotesDC/index.html"
+    webbrowser.open(url)
