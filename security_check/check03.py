@@ -330,6 +330,7 @@ def compare_update_version_hangul():
     except ValueError:
         return -1
 
+# HOT FIX 등 최신 보안패치 적용
 def check_pc06():
     results = Queue()
     if get_hotfix() == 1:
@@ -356,6 +357,7 @@ def check_pc06():
     
     return results
 
+# 최신 서비스팩 적용
 def check_pc07():
     results = Queue()
     hotfix_ids, installed_dates = get_hotfix()
@@ -385,6 +387,7 @@ def check_pc07():
 
     return results
 
+# 응용프로그램에 대한 최신 패치 적용
 def check_pc08():
     results = Queue()
     adb = compare_acrobat_versions()
@@ -430,58 +433,6 @@ def check_pc08():
 def test_check(results:Queue):
     while not results.empty():
         print(results.get())
-        # get_solve(results.get())
-
-def get_solve(info):
-    results = Queue()
-    if info["id"] == "PC-06":
-        if info["sub-id"] == "PC-06-update_.ver":
-            results.put({
-                "type" : "link",
-            })
-            
-    elif info["id"] == "PC-07":
-        if info["sub-id"] == "PC-07-update_.ver":
-            results.put({
-                "type" : "link",
-            })
-
-    elif info["id"] == "PC-08":
-        if info["sub-id"] == "PC-08-adobe_acrobat_update_.ver":
-            results.put({
-                "type" : "link",
-            })
-
-        elif info["sub-id"] == "PC-08-adobe_acrobat_uninstall":
-            results.put({
-                "type" : "link",
-            })
-
-        elif info["sub-id"] == "PC-08-hangul_update_.ver":
-            results.put({
-                "type" : "link",
-            })
-        
-        elif info["sub-id"] == "PC-08-ms_update_.ver":
-            results.put({
-                "type" : "link",
-            })
-    
-    elif info["id"] == "PC-17":
-        if info["sub-id"] == "PC-17_delete_os":
-            results.put({
-                "type" : "link",
-            })
-
-    elif info["id"] == "PC-18":
-        if info["sub-id"] == "PC-18_empty_file_folder":
-            results.put({
-                "type" : "link",
-            })
-        elif info["sub-id"] == "PC-18_cant_find_file":
-            results.put({
-                "type" : "link",
-            })
 
 if __name__ == "__main__":
     test_check(check_pc06())
