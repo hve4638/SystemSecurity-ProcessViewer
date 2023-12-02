@@ -16,6 +16,30 @@ class RunAsCLI:
     def __init__(self, front_api):
         self.api = front_api
 
+    def security_check_new(self):
+        apisc = self.api.SecurityCheck
+        checklist = apisc.get_checklist()
+
+        for c in checklist:
+            print(f"[{c['id']}] {c['name']}")
+        
+        input("press enter")
+        for c in checklist:
+            print(f"Check {c['id']}")
+            result = apisc.check(c['id'])
+
+            print("양호 :", result["pass"])
+            print("자세한 문제 :", result["detail"])
+
+            cs = "solve" if result["cansolve"] else "link"
+            print("solve or link :", cs)
+            print("solver 함수 :", result["solver"])
+            print("")
+            print("")
+            
+        
+
+
     def security_check(self):
         apisc = self.api.SecurityCheck
 
@@ -66,7 +90,7 @@ class RunAsCLI:
             print("", end="\n"*3)
             print("Run as CLI", end="\n"*2)
             print("[1] Security Check")
-            print("[2] Explorer")
+            print("[2] Security Check (NEW)")
             print("[3] Exit")
             value = input_match("> ", r"[1-3]")
             match value:
@@ -78,7 +102,8 @@ class RunAsCLI:
                         print(e)
                         raise
                 case "2":
-                    print("explorer")
+                    #print("explorer")
+                    self.security_check_new()
                 case "3":
                     break
 

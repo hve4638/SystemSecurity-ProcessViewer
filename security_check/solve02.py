@@ -1,3 +1,4 @@
+import subprocess
 import winreg
 import re, os
 import ctypes

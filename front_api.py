@@ -19,6 +19,81 @@ class FrontAPI:
         vt.virustotal_init()
 
     class SecurityCheck:
+        checkers = {
+            "PC-01" : security_check.check_pc01,
+            "PC-02" : security_check.check_pc02,
+            "PC-03" : security_check.check_pc03,
+            "PC-04" : security_check.check_pc04,
+            "PC-05" : security_check.check_pc05,
+            #"PC-06" : security_check.check_pc06,
+            "PC-07" : security_check.check_pc07,
+            #"PC-08" : security_check.check_pc08,
+            "PC-09" : security_check.check_pc09,
+            "PC-10" : security_check.check_pc10,
+            "PC-11" : security_check.check_pc11,
+            #"PC-12" : security_check.check_pc12,
+            "PC-13" : security_check.check_pc13,
+            "PC-15" : security_check.check_pc15,
+            "PC-16" : security_check.check_pc16,
+            #"PC-17" : security_check.check_pc17,
+            #"PC-18" : security_check.check_pc18,
+            "PC-19" : security_check.check_pc19,
+        }
+        solvers = {
+            "PC-02" : security_check.solve_pc02,
+            "PC-03" : security_check.solve_pc03,
+            "PC-11" : security_check.solve_pc11,
+            "PC-12" : security_check.solve_pc12,
+            "PC-13" : security_check.solve_pc13,
+            "PC-15" : security_check.solve_pc15,
+            "PC-16" : security_check.solve_pc16,
+            "PC-19" : security_check.solve_pc19,
+        }
+        linker = {
+            "PC-01" : security_check.solve_pc01,
+            "PC-04" : security_check.solve_pc04,
+            "PC-05" : security_check.solve_pc05,
+            "PC-06" : security_check.solve_pc06,
+            "PC-07" : security_check.solve_pc07,
+            "PC-08" : security_check.solve_pc08,
+            "PC-09" : security_check.solve_pc09,
+            "PC-10" : security_check.solve_pc10,
+        }
+
+        @classmethod
+        def check(cls, id:str):
+            caller = cls.get_check_caller(id)
+            results = caller()
+
+            errors = []
+            while not results.empty():
+                result = results.get()
+                match result['type']:
+                    case 'error':
+                        errors.append(result)
+                    case _:
+                        pass
+            
+            if not errors:
+                return {
+                    "pass" : True,
+                    "detail" : [],
+                    "cansolve" : False,
+                    "solver" : lambda : None,
+                }
+            else:
+                svtype, solver = cls.get_solve(id)
+                details = []
+                for error in errors:
+                    details.append(error["reason"])
+                return {
+                    "pass" : False,
+                    "detail" : details,
+                    "cansolve" : svtype == "solve",
+                    "solver" : solver,
+                }
+            
+
         @classmethod
         def get_checklist(cls):
             return [
@@ -39,7 +114,7 @@ class FrontAPI:
                 { "id" : "PC-11", "name" : "OS에서 제공하는 침입차단 기능 활성화" },
                 { "id" : "PC-12", "name" : "화면보호기 대기 시간 설정 및 재시작 시 암호 보호 설정" },
                 { "id" : "PC-13", "name" : "이동식 미디어에 대한 보안대책 수립" },
-                { "id" : "PC-14", "name" : "PC 내부의 미사용 ActiveX 제거" },
+                # { "id" : "PC-14", "name" : "PC 내부의 미사용 ActiveX 제거" },
                 { "id" : "PC-19", "name" : "원격지원 금지 정책" },
             ]
         
@@ -57,24 +132,20 @@ class FrontAPI:
                     "addition" : {}})
                 return q
 
-            match id:
-                case "PC-01":
-                    return security_check.check_pc01
-                case "PC-02":
-                    return security_check.check_pc02
-                case "PC-03":
-                    return security_check.check_pc03
-                case "PC-04":
-                    return security_check.check_pc04
-                case "PC-05":
-                    return security_check.check_pc05
-                case "PC-16":
-                    return security_check.check_pc16
-                case _:
-                    return nocheck
+            if id in cls.checkers:
+                return cls.checkers[id]
+            else:
+                return nocheck
                 
         @classmethod
-        def get_solve(cls, id_or_errorlog):
+        def get_solve(cls, id):
+            if id in cls.solvers:
+                return "solve", cls.solvers[id]
+            elif id in cls.linker:
+                return "linker", cls.linker[id]
+            else:
+                return "linker", lambda : None
+
             def solve():
                 for svcall in exportset:
                     svcall()
