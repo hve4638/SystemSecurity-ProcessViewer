@@ -25,15 +25,14 @@ class Ui_MainPages:
         self.page_1.setObjectName(u"page_1")
         self.page_1.setStyleSheet(u"font-size: 16pt")
 
-
-
         self.pages.addWidget(self.page_1)
         self.page_2 = QWidget()
         self.page_2.setObjectName(u"page_2")
         self.page_2_layout = QVBoxLayout(self.page_2)
-        self.page_2_layout.setSpacing(5)
+        self.page_2_layout.setSpacing(0)
         self.page_2_layout.setObjectName(u"page_2_layout")
-        self.page_2_layout.setContentsMargins(5, 5, 5, 5)
+        self.page_2_layout.setContentsMargins(0, 0, 0, 0)
+
         self.scroll_area = QScrollArea(self.page_2)
         self.scroll_area.setObjectName(u"scroll_area")
         self.scroll_area.setStyleSheet(u"background: transparent;")
@@ -46,9 +45,9 @@ class Ui_MainPages:
         self.contents.setGeometry(QRect(0, 0, 840, 580))
         self.contents.setStyleSheet(u"background: transparent;")
         self.verticalLayout = QVBoxLayout(self.contents)
-        self.verticalLayout.setSpacing(15)
+        self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
-        self.verticalLayout.setContentsMargins(5, 5, 5, 5)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         self.title_label = QLabel(self.contents)
         self.title_label.setObjectName(u"title_label")
         self.title_label.setMaximumSize(QSize(16777215, 40))
