@@ -63,38 +63,31 @@ def get_latest_version_and_date(hotfix_id):
     # Microsoft Update Catalog의 URL
     url = f'https://www.catalog.update.microsoft.com/Search.aspx?q={hotfix_id}'
 
-    # 웹 페이지에 요청을 보내고 HTML을 가져옴
     response = urllib.request.urlopen(url)
     html_content = response.read().decode('utf-8')
 
-    # HTML 파싱
     parser = CatalogParser()
     parser.feed(html_content)
 
     return parser.hotfix_id, parser.date
 
 def get_recent_hotfix_id_pc_06(hotfix_id):
-    installed_version = f"Installed Version for {hotfix_id}"  # 여기에서 실제 설치된 버전
+    installed_version = f"Installed Version for {hotfix_id}"  
 
-    # PowerShell 명령어 실행
     powershell_cmd = f'Get-HotFix -Id {hotfix_id} | Select-Object HotFixID,Description,InstalledBy,InstalledOn'
     result = subprocess.run(['powershell', '-Command', powershell_cmd], capture_output=True, text=True)
 
-    # PowerShell 출력에서 핫픽스 정보 추출
     hotfix_line = result.stdout.strip()
 
-    # 핫픽스 정보가 존재하면 최신 버전인지 확인
     if hotfix_line:
         match = re.match(r'\s*(KB\d+)\s+(.+)\s+(\S+)\s+(\S+)', hotfix_line)
         if match:
             installed_version = match.group(1)
-            # 여기에서 최신 버전인지 확인하는 조건을 추가할 수 있습니다.
-            # 예를 들어, 최신 버전이라면 "KB" 다음에 오는 숫자가 현재 시스템에
 
             latest_version, date_str = get_latest_version_and_date(hotfix_id)
 
             if latest_version is None or date_str is None:
-                return 1  # 최신 버전이 아닌 경우 1을 리턴
+                return 1
 
             installed_date = datetime.strptime(date_str, '%m/%d/%Y').date()
 
@@ -104,7 +97,6 @@ def get_recent_hotfix_id_pc_06(hotfix_id):
     return 0  # 최신 버전인 경우 0을 리턴
 
 def get_hotfix():
-    # Command to check Windows Update status
     command = "wmic qfe get Hotfixid,InstalledOn"
 
     result = cmd(["cmd.exe", "/c", command])
@@ -112,23 +104,18 @@ def get_hotfix():
     hotfix_ids = []
     installed_dates = []
 
-    # Decode with the successful encoding
     hotfix_info = result.strip().split('\r\n')
 
-    # If only 'HotFixID' is returned, no updates are installed
     if len(hotfix_info) <= 1:
-        return 1
-    else:
-        for info in hotfix_info[1:]:  # Skip the title   
-            parts = info.split()
+        return None
 
-            # Check if there are enough parts to extract Hotfix ID and Installed Date
-            if len(parts) >= 2:
-                hotfix_id, installed_on = parts[0], parts[-1]
-                hotfix_ids.append(hotfix_id)
-                installed_dates.append(installed_on)
-            else:
-                pass
+    for info in hotfix_info[1:]:  # Skip the title   
+        parts = info.split()
+
+        if len(parts) >= 2:
+            hotfix_id, installed_on = parts[0], parts[-1]
+            hotfix_ids.append(hotfix_id)
+            installed_dates.append(installed_on)
 
     return hotfix_ids, installed_dates
 
@@ -226,8 +213,18 @@ def compare_update_version_hangul():
 # HOT FIX 등 최신 보안패치 적용
 def check_pc06():
     results = Queue()
-    if get_hotfix() == 1:
-        check = 1
+
+    hotfix_info = get_hotfix()
+    
+    if hotfix_info is None:
+        results.put({
+            "id" : "PC-06",
+            "sub-id" : "PC-06-update_.ver",
+            "type" : "error",
+            "reason" : "보안패치 설치 필요"
+        })
+        return results
+        
     else:
         hotfix_ids, installed_dates = get_hotfix()
         for i, hotfix_id in enumerate(hotfix_ids):
@@ -238,7 +235,6 @@ def check_pc06():
             if result == 1:
                 check = 1  # 최신 버전이 아닌 경우 1을 리턴
 
-        # 모든 핫픽스가 최신이라면 0을 리턴
         check = 0
     if check == 1:
         results.put({
