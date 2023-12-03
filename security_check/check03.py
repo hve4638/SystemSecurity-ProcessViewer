@@ -12,6 +12,18 @@ from urllib.request import urlopen
 # check_pc08 : MS-Office, 한글, 어도비 아크로뱃 등의 응용프로그램에 대한 최신 보안패치 적용 확인
 # check_pc09 : Windows 보호 업데이트 주기적 업데이트
 
+cand_encoding = ['utf-8', 'cp949', 'latin-1']
+
+def cmd(command):
+    for encoding in cand_encoding:
+        try:
+            return subprocess.check_output(command, shell=True, text=True, encoding=encoding)
+        except UnicodeError:
+            continue
+        except UnicodeDecodeError:
+            continue
+    raise UnicodeDecodeError()
+
 class CatalogParser(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -95,34 +107,29 @@ def get_hotfix():
     # Command to check Windows Update status
     command = "wmic qfe get Hotfixid,InstalledOn"
 
+    result = cmd(["cmd.exe", "/c", command])
+
     hotfix_ids = []
     installed_dates = []
-    
-    # Running the command
-    process = subprocess.Popen(["cmd.exe", "/c", command], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    result, error = process.communicate()
-    
-    if error:
-        print("Error retrieving Windows Update status:", error.decode('cp949'))
+
+    # Decode with the successful encoding
+    hotfix_info = result.strip().split('\r\n')
+
+    # If only 'HotFixID' is returned, no updates are installed
+    if len(hotfix_info) <= 1:
+        return 1
     else:
-        # Decode with 'cp949' to handle Korean characters
-        hotfix_info = result.decode('cp949').strip().split('\r\n')
+        for info in hotfix_info[1:]:  # Skip the title   
+            parts = info.split()
 
-        # If only 'HotFixID' is returned, no updates are installed
-        if len(hotfix_info) <= 1:
-            return 1
-        else:
-            for info in hotfix_info[1:]:  # Skip the title   
-                parts = info.split()
+            # Check if there are enough parts to extract Hotfix ID and Installed Date
+            if len(parts) >= 2:
+                hotfix_id, installed_on = parts[0], parts[-1]
+                hotfix_ids.append(hotfix_id)
+                installed_dates.append(installed_on)
+            else:
+                pass
 
-                # Check if there are enough parts to extract Hotfix ID and Installed Date
-                if len(parts) >= 2:
-                    hotfix_id, installed_on = parts[0], parts[-1]
-                    hotfix_ids.append(hotfix_id)
-                    installed_dates.append(installed_on)
-                else:
-                    pass
-                
     return hotfix_ids, installed_dates
 
 # MS-Office
