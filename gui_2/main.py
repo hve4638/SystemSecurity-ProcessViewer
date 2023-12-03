@@ -50,11 +50,6 @@ class MainWindow(QMainWindow):
         self.ui = UI_MainWindow(front_api)
         self.ui.setup_ui(self)
 
-        #self.setupSecurityCheck()  # 보안 검사 설정
-
-
-
-
         # LOAD SETTINGS
         # ///////////////////////////////////////////////////////////////
         settings = Settings()
@@ -68,6 +63,34 @@ class MainWindow(QMainWindow):
         # SHOW MAIN WINDOW
         # ///////////////////////////////////////////////////////////////
         self.show()
+        self.create_retest_button()
+
+    def create_retest_button(self):
+        retest_button = QPushButton("Retest", self.ui.load_pages.page_2)
+        retest_button.setObjectName("btn_retest")  # 버튼의 objectName을 설정
+        retest_button.clicked.connect(self.btn_retest_clicked)  # 클릭 이벤트 핸들러 연결
+        retest_button.setStyleSheet(f"""
+                    QPushButton {{
+                        border-radius: 8px;
+                        color: {self.themes["app_color"]["text_foreground"]};
+                        background-color: {self.themes["app_color"]["dark_one"]};
+                    }}
+                    QPushButton:hover {{
+                        background-color: {self.themes["app_color"]["dark_three"]};
+                    }}
+                    QPushButton:pressed {{
+                        background-color: {self.themes["app_color"]["dark_four"]};
+                    }}
+                """)
+        retest_button.setFixedSize(120, 40)  # Set the button's size
+
+        retest_widget = QWidget(self.ui.load_pages.page_2)
+        retest_layout = QVBoxLayout(retest_widget)
+        retest_layout.addWidget(retest_button)
+        retest_layout.setAlignment(Qt.AlignTop.AlignRight)
+
+        # Add the widget (which contains the button and layout) to the page_2_layout
+        self.ui.load_pages.page_2_layout.addWidget(retest_widget)
 
     # LEFT MENU BTN IS CLICKED
     # Run function when btn is clicked
@@ -84,6 +107,22 @@ class MainWindow(QMainWindow):
         # Get Title Bar Btn And Reset Active
         top_settings = MainFunctions.get_title_bar_btn(self, "btn_top_settings")
         top_settings.set_active(False)
+
+        def btn_clicked(self):
+            # ...
+
+            # Open Page 2
+            if btn.objectName() == "btn_Kisa":
+                # Select Menu
+                self.ui.left_menu.select_only_one(btn.objectName())
+
+                # Load Page 2
+                MainFunctions.set_page(self, self.ui.load_pages.page_2)
+
+                # Connect the "재검사" button's click event to perform_security_checks
+                retest_button = self.ui.load_pages.page_2.findChild(QPushButton, "btn_retest")
+                retest_button.clicked.connect(self.perform_security_checks)
+
 
         # LEFT MENU
         # ///////////////////////////////////////////////////////////////
@@ -187,6 +226,7 @@ class MainWindow(QMainWindow):
     # Run function when btn is released
     # Check funtion by object name / btn_id
     # ///////////////////////////////////////////////////////////////
+
     def btn_released(self):
         # GET BT CLICKED
         btn = SetupMainWindow.setup_btns(self)
@@ -253,6 +293,49 @@ class MainWindow(QMainWindow):
                 self.add_error_item_with_button(index, '\n'.join(result["detail"]))
                 self.update_action_buttons(index, result["cansolve"], result["solver"])
         self.show_message("보안 검사 전체 결과", all_results_message)
+    def re_perform_security_checks(self):
+        apisc = self.api.SecurityCheck
+        checklist = apisc.get_checklist()
+        self.row_solvers = {}
+        all_results_message = ""
+
+        for index, item in enumerate(checklist):
+            print(f"Checking {item['name']}... ", end="")
+
+            result = apisc.check(item['id'])
+            self.row_solvers[index] = result["solver"]
+
+            result_message = f"Checking {item['name']}...\n"
+            result_message += f"자세한 문제 : {result['detail']}\n"
+            all_results_message += result_message
+
+            print("양호 :", result["pass"])
+            print("자세한 문제 :", result["detail"])
+            print("solve or link :", "solve" if result["cansolve"] else "link")
+            print("solver 함수 :", result["solver"])
+            print("")
+
+            if result["pass"]:
+                print(f"{item['name']} Passed")
+                self.set_test_status(index, "success")
+                self.add_normal_item_with_link(index)
+            else:
+                print(f"{item['name']} Failed")
+                for detail in result["detail"]:
+                    print(f"- {detail}")
+                self.set_test_status(index, "failure")
+                self.add_error_item_with_button(index, '\n'.join(result["detail"]))
+                self.update_action_buttons(index, result["cansolve"], result["solver"])
+
+    def btn_retest_clicked(self):
+        # 검사 시작 메시지 표시
+        self.show_status_message("재검사 시작 중...")
+
+        # 검사 시작
+        self.re_perform_security_checks()
+
+        # 검사 종료 메시지 표시
+        self.show_status_message("재검사가 완료되었습니다.")
 
 
     def show_message(self, title, message):
@@ -325,6 +408,8 @@ class MainWindow(QMainWindow):
     def action_button_clicked(self, row, cansolve, solver):
         solver()
         print(f"{row}번 행에서 조치 버튼이 클릭되었습니다.")
+
+
 
 
 
