@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 # check_pc06 : HOT FIX 등 최신 보안패치 적용 확인
 # check_pc07 : 최신 서비스팩 적용 확인
-# check_pc08 : MS-Office, 한글, 어도비 아크로뱃 등의 응용프로그램에 대한 최신 보안패치 적용 확인
+# check_pc08 : 한글, 어도비 아크로뱃 등의 응용프로그램에 대한 최신 보안패치 적용 확인
 # check_pc09 : Windows 보호 업데이트 주기적 업데이트
 
 cand_encoding = ['utf-8', 'cp949', 'latin-1']
@@ -132,120 +132,6 @@ def get_hotfix():
 
     return hotfix_ids, installed_dates
 
-# MS-Office
-class CatalogParser_ms(HTMLParser):
-    def __init__(self):
-        super().__init__()
-        self.in_title = False
-        self.in_date = False
-        self.hotfix_id = None
-        self.date = None
-        self.first_row_parsed = False
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'td' and ('class', 'resultsbottomBorder resultspadding') in attrs:
-            self.in_title = True
-        elif tag == 'td' and ('class', 'resultsbottomBorder resultspadding ') in attrs:
-            self.in_date = True
-
-    def handle_data(self, data):
-        if self.in_title:
-            self.hotfix_id = data.strip().split(' ')[-1]
-        elif self.in_date:
-            raw_date = data.strip()
-            parsed_date = datetime.strptime(raw_date, '%m/%d/%Y').strftime('%m/%d/%Y')
-            self.date = parsed_date
-
-    def handle_endtag(self, tag):
-        if tag == 'td':
-            self.in_title = False
-            self.in_date = False
-
-        if tag == 'tr' and not self.first_row_parsed:
-            self.first_row_parsed = True
-
-def get_latest_version_and_date_ms(hotfix_id):
-    url = f'https://www.catalog.update.microsoft.com/Search.aspx?q={hotfix_id}'
-    response = urlopen(url)
-    html_content = response.read().decode('utf-8')
-    parser = CatalogParser_ms()
-    parser.feed(html_content)
-    return parser.hotfix_id, parser.date
-
-def is_hotfix_up_to_date(hotfix_id):
-    installed_version = f"Installed Version for {hotfix_id}"
-    powershell_cmd = f'Get-HotFix -Id {hotfix_id} | Select-Object HotFixID,Description,InstalledBy,InstalledOn'
-    result = subprocess.run(['powershell', '-Command', powershell_cmd], capture_output=True, text=True)
-
-    hotfix_line = result.stdout.strip()
-
-    if hotfix_line:
-        match = re.match(r'\s*(KB\d+)\s+(.+)\s+(\S+)\s+(\S+)', hotfix_line)
-        if match:
-            installed_version = match.group(1)
-            latest_version, date_str = get_latest_version_and_date_ms(hotfix_id)
-
-            if latest_version is None or date_str is None:
-                return 1
-
-            installed_date = datetime.strptime(date_str, '%m/%d/%Y').date()
-
-            if installed_date < datetime.now().date():
-                return 1
-
-    return 0
-
-def get_hotfix_ms():
-    command = 'wmic qfe get Hotfixid,InstalledOn,Description'
-    descriptions = []
-    hotfix_ids = []
-    installed_dates = []
-
-    result = cmd(["cmd.exe", "/c", command])
-
-    hotfix_info = result.strip().split('\r\n')
-
-    if len(hotfix_info) <= 1:
-        return 2
-    else:
-        for info in hotfix_info[1:]:
-            parts = info.split()
-
-            if len(parts) >= 2:
-                descriptions = parts[0]
-                if descriptions == 'Security':
-                    continue
-                else:
-                    hotfix_id, installed_on = parts[-2], parts[-1]
-                    hotfix_ids.append(hotfix_id)
-                    installed_dates.append(installed_on)
-            else:
-                pass
-
-    return hotfix_ids, installed_dates
-
-
-def compare_update_version_MS():
-    try:
-        if get_hotfix_ms() == 1:
-            return 1
-        elif get_hotfix_ms() == 2:
-            return 2
-        else:
-            hotfix_ids, installed_dates = get_hotfix_ms()
-            for i, hotfix_id in enumerate(hotfix_ids):
-                installed_date_str = installed_dates[i]
-
-                result = is_hotfix_up_to_date(hotfix_id)
-
-                if result == 1:
-                    return 1
-
-            return 0
-        
-    except ValueError:
-        return -1
-
 # 어도비 아크로벳
 def get_update_version_with_urllib():
     url = "https://helpx.adobe.com/kr/acrobat/release-note/release-notes-acrobat-reader.html"
@@ -332,8 +218,6 @@ def compare_update_version_hangul():
 
         if ver >= newver:
             return 0
-        elif newver == 1 or ver == 1:
-            return 2
         else:
             return 1
     except ValueError:
@@ -401,7 +285,6 @@ def check_pc08():
     results = Queue()
     adb = compare_acrobat_versions()
     hangul = compare_update_version_hangul()
-    ms = compare_update_version_MS()
     
     # Adobe Acrobat 이 최신버전이 아닐경우
     if adb == 1:
@@ -434,22 +317,7 @@ def check_pc08():
             "type" : "info",
             "reason" : "한글이 설치되어있지 않습니다。",
         })
-    
-    # MS-Office가 최신버전이 아닐경우
-    if ms == 1:
-        results.put({
-            "id" : "PC-08",
-            "sub-id" : "PC-08-update_.ver",
-            "type" : "error",
-            "reason" : "MS-Office가 최신업데이트가 아닙니다.",
-        })
-    elif ms == 2:       
-        results.put({
-            "id" : "PC-08",
-            "sub-id" : "PC-08-update_.ver",
-            "type" : "info",
-            "reason" : "설치된 업데이트가 없습니다。",
-        })       
+      
         
     return results
 
