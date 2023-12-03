@@ -378,6 +378,8 @@ class SetupMainWindow:
             active_color = self.themes["app_color"]["context_color"]
         )
 
+
+
         # TABLE WIDGETS
         self.table_widget = PyTableWidget(
             radius = 8,
@@ -439,28 +441,6 @@ class SetupMainWindow:
 
 
 
-            """
-            def setup_table_widget(self):
-                # 테이블 위젯 설정 코드...
-
-                # 보안 검사 항목을 테이블에 추가
-                apisc = self.api.SecurityCheck
-                checklist = apisc.get_checklist()
-                for i, item in enumerate(checklist):
-                    row_number = self.table_widget.rowCount()
-                    self.table_widget.insertRow(row_number)  # 행 추가
-                    self.table_widget.setRowHeight(row_number, 22)
-                    table_item = QTableWidgetItem(str(item["name"]))
-                    self.table_widget.setItem(i, 0, table_item)
-            """
-
-        """
-        # 검사 결과에 따라 오류 메시지와 링크 추가
-        for i, item in enumerate(checklist):
-            check_result = self.api.SecurityCheck.get_check_result(item["id"])
-            self.add_error_item_with_link(i, check_result, "자세히 보기", "http://naver.com")
-        """
-
         #조치열에 버튼추가
         for row in range(self.table_widget.rowCount()):
 
@@ -468,9 +448,6 @@ class SetupMainWindow:
             for i, item in enumerate(checklist):
                 table_item = QTableWidgetItem(str(item["name"]))
                 self.table_widget.setItem(i, 0, table_item)
-
-
-
 
 
 
