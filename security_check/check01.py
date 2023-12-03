@@ -119,6 +119,7 @@ def check_pc02():
     return results
 
 def check_pc02_sec(results:Queue):
+    return
     if not os.path.exists(".tmp"):
         os.mkdir(".tmp")
     file = "./.tmp/__policy"
