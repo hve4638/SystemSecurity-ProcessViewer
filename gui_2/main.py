@@ -36,36 +36,7 @@ def queueiter(q:queue.Queue):
     while not q.empty():
         yield q.get()
 
-"""
-class SecurityCheckThread(QThread):
-    # 시그널 정의: 검사 결과를 전달하기 위한 시그널.
-    signal_update_status = pyqtSignal(int, object)
 
-    def __init__(self, check_functions, parent=None):
-        super(SecurityCheckThread, self).__init__(parent)
-        self.check_functions = check_functions  # 검사 함수를 저장하는 리스트
-
-    def run(self):
-        # 각 검사 함수를 순회하면서 실행
-        for index, check_function in enumerate(self.check_functions):
-            try:
-                check_result = check_function()  # 검사 함수 실행
-                # 검사 결과와 함께 시그널 발생
-                self.signal_update_status(index, check_result)
-            except Exception as e:
-                # 예외 발생 시 None을 결과로 시그널 발생
-                self.signal_update_status(index, None)
-
-"""
-"""
-class DetailWindow(QDialog):
-    def __init__(self, detail_text, parent=None):
-        super().__init__(parent)
-        self.layout = QVBoxLayout()
-        self.label = QLabel(detail_text)
-        self.layout.addWidget(self.label)
-        self.setLayout(self.layout)
-"""
 
 
 # MAIN WINDOW
@@ -251,6 +222,7 @@ class MainWindow(QMainWindow):
     def perform_security_checks(self):
         apisc = self.api.SecurityCheck
         checklist = apisc.get_checklist()
+        self.row_solvers = {}
         all_results_message = ""
 
         for index, item in enumerate(checklist):
@@ -258,6 +230,8 @@ class MainWindow(QMainWindow):
 
             # apisc.check 메소드를 사용하여 검사 결과를 받아옴
             result = apisc.check(item['id'])
+            # 각 행에 대한 solver 함수 저장
+            self.row_solvers[index] = result["solver"]
 
             result_message = f"Checking {item['name']}...\n"
             result_message += f"자세한 문제 : {result['detail']}\n"
@@ -273,7 +247,7 @@ class MainWindow(QMainWindow):
             print("")
 
             # cansolve 값에 따라 조치 버튼 업데이트
-            self.update_action_buttons(index, result["cansolve"])
+            self.update_action_buttons(index, result["cansolve"], result["solver"])
 
             # 결과에 따른 상태 업데이트
             if result["pass"]:
@@ -332,7 +306,7 @@ class MainWindow(QMainWindow):
 
 
 
-    def update_action_buttons(self, row, cansolve):
+    def update_action_buttons(self, row, cansolve, solver):
         # cansolve 값에 따라 버튼 텍스트 결정
         button_text = "자동 조치" if cansolve else "수동 조치"
         action_button = QPushButton(button_text, self)
@@ -353,13 +327,15 @@ class MainWindow(QMainWindow):
             }
         """)
 
+
         # 람다 함수를 사용하여 클릭 이벤트 연결
-        action_button.clicked.connect(lambda: self.action_button_clicked(row, cansolve))
+        action_button.clicked.connect(lambda: self.action_button_clicked(row, cansolve, solver))
         self.table_widget.setCellWidget(row, 3, action_button)
 
-    def action_button_clicked(self, row, cansolve):
+    def action_button_clicked(self, row, cansolve, solver):
         if cansolve:
             print(f"{row}번 행에서 자동 조치 버튼이 클릭되었습니다.")
+            solver()
             # 자동 조치 처리 로직
         else:
             print(f"{row}번 행에서 수동 조치 버튼이 클릭되었습니다.")
