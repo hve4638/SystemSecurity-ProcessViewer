@@ -228,42 +228,32 @@ class MainWindow(QMainWindow):
         for index, item in enumerate(checklist):
             print(f"Checking {item['name']}... ", end="")
 
-            # apisc.check 메소드를 사용하여 검사 결과를 받아옴
             result = apisc.check(item['id'])
-            # 각 행에 대한 solver 함수 저장
             self.row_solvers[index] = result["solver"]
 
             result_message = f"Checking {item['name']}...\n"
             result_message += f"자세한 문제 : {result['detail']}\n"
             all_results_message += result_message
 
-            # 결과 출력
             print("양호 :", result["pass"])
             print("자세한 문제 :", result["detail"])
-
-            # cansolve 값에 따른 추가 처리
             print("solve or link :", "solve" if result["cansolve"] else "link")
             print("solver 함수 :", result["solver"])
             print("")
 
-            # cansolve 값에 따라 조치 버튼 업데이트
-            self.update_action_buttons(index, result["cansolve"], result["solver"])
-
-            # 결과에 따른 상태 업데이트
             if result["pass"]:
                 print(f"{item['name']} Passed")
                 self.set_test_status(index, "success")
-                # 정상 상태 메시지 추가
                 self.add_normal_item_with_link(index)
-
             else:
                 print(f"{item['name']} Failed")
                 for detail in result["detail"]:
                     print(f"- {detail}")
                 self.set_test_status(index, "failure")
-                # 오류 메시지와 링크를 테이블에 추가
                 self.add_error_item_with_button(index, '\n'.join(result["detail"]))
+                self.update_action_buttons(index, result["cansolve"], result["solver"])
         self.show_message("보안 검사 전체 결과", all_results_message)
+
 
     def show_message(self, title, message):
         self.msg_box = QMessageBox()
