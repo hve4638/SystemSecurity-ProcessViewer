@@ -1,3 +1,5 @@
+import subprocess
+
 def check_pc17():
     results = Queue()
     cmd("chcp 949")
