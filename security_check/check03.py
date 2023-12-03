@@ -332,6 +332,8 @@ def compare_update_version_hangul():
 
         if ver >= newver:
             return 0
+        elif newver == 1 or ver == 1:
+            return 2
         else:
             return 1
     except ValueError:
@@ -425,7 +427,14 @@ def check_pc08():
             "type" : "error",
             "reason" : "한글이 최신업데이트가 아닙니다.",
         })
-        
+    elif hangul == 2:
+        results.put({
+            "id" : "PC-08",
+            "sub-id" : "PC-08-update_.ver",
+            "type" : "info",
+            "reason" : "한글이 설치되어있지 않습니다。",
+        })
+    
     # MS-Office가 최신버전이 아닐경우
     if ms == 1:
         results.put({
