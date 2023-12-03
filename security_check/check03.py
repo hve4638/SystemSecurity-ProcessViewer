@@ -233,7 +233,7 @@ def check_pc06():
             result = get_recent_hotfix_id_pc_06(hotfix_id)
 
             if result == 1:
-                check = 1  # 최신 버전이 아닌 경우 1을 리턴
+                check = 1
 
         check = 0
     if check == 1:
@@ -249,9 +249,23 @@ def check_pc06():
 # 최신 서비스팩 적용
 def check_pc07():
     results = Queue()
+    
+    hotfix_info = get_hotfix()
+
+    if hotfix_info is None:
+        results.put({
+            "id": "PC-07",
+            "sub-id": "PC-07-no-hotfix",
+            "type": "error",
+            "reason": "보안패치 설치 필요"
+        })
+        return results
+
+    hotfix_ids, installed_dates = hotfix_info
+    
     hotfix_ids, installed_dates = get_hotfix()
     for i, hotfix_id in enumerate(hotfix_ids):
-        installed_version = f"Installed Version for {hotfix_id}"  # 여기에서 실제 설치된 버전
+        installed_version = f"Installed Version for {hotfix_id}"
         installed_date_str = installed_dates[i]
         
         latest_version, date_str = get_latest_version_and_date(hotfix_id)
@@ -266,6 +280,7 @@ def check_pc07():
             check = 0
         else:
             check = 1
+            
     if check == 1:
         results.put({
             "id" : "PC-07",
