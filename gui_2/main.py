@@ -333,13 +333,8 @@ class MainWindow(QMainWindow):
         self.table_widget.setCellWidget(row, 3, action_button)
 
     def action_button_clicked(self, row, cansolve, solver):
-        if cansolve:
-            print(f"{row}번 행에서 자동 조치 버튼이 클릭되었습니다.")
-            solver()
-            # 자동 조치 처리 로직
-        else:
-            print(f"{row}번 행에서 수동 조치 버튼이 클릭되었습니다.")
-            # 수동 조치 처리 로직
+        solver()
+        print(f"{row}번 행에서 조치 버튼이 클릭되었습니다.")
 
 
 
