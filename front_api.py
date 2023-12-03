@@ -25,13 +25,13 @@ class FrontAPI:
             "PC-03" : security_check.check_pc03,
             "PC-04" : security_check.check_pc04,
             "PC-05" : security_check.check_pc05,
-            #"PC-06" : security_check.check_pc06,
-            "PC-07" : security_check.check_pc07,
-            #"PC-08" : security_check.check_pc08,
+            "PC-06" : security_check.check_pc06,
+            #"PC-07" : security_check.check_pc07,
+            "PC-08" : security_check.check_pc08,
             "PC-09" : security_check.check_pc09,
             "PC-10" : security_check.check_pc10,
             "PC-11" : security_check.check_pc11,
-            #"PC-12" : security_check.check_pc12,
+            "PC-12" : security_check.check_pc12,
             "PC-13" : security_check.check_pc13,
             "PC-15" : security_check.check_pc15,
             "PC-16" : security_check.check_pc16,
@@ -276,6 +276,11 @@ class FrontAPI:
                             case "done":
                                 if result["detected"]:
                                     yield f'detected! (file:"{filename}")\n'
+                                    for v in result["detail"]:
+                                        if v["detected"]:
+                                            vname = result["Vendor Name"]
+                                            vver = result["Vendor Name"]
+                                            yield f'- vendor:"{vname}({vver})"\n'
                                 else:
                                     yield f'normal (file:"{filename}")\n'
                                 break
@@ -305,3 +310,7 @@ class FrontAPI:
                 return filenames
             
             return cls.upload_files(__get_recursively(dirname))
+
+
+if __name__ == "__main__":
+    security_check.solve_pc01()
