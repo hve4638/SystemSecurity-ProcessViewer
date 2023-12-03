@@ -1,5 +1,5 @@
 import winreg
-import queue
+from queue import Queue
 
 def check_pc18():
     results = Queue()
