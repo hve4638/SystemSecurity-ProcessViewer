@@ -1,4 +1,5 @@
 import subprocess
+import queue
 
 def check_pc17():
     results = Queue()
