@@ -195,45 +195,44 @@ def is_hotfix_up_to_date(hotfix_id):
 
     return 0
 
-def get_hotfix():
+def get_hotfix_ms():
     command = 'wmic qfe get Hotfixid,InstalledOn,Description'
     descriptions = []
     hotfix_ids = []
     installed_dates = []
 
-    process = subprocess.Popen(["cmd.exe", "/c", command], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    result, error = process.communicate()
+    result = cmd(["cmd.exe", "/c", command])
 
-    if error:
-        print("Error retrieving Windows Update status:", error.decode('cp949'))
+    hotfix_info = result.strip().split('\r\n')
+
+    if len(hotfix_info) <= 1:
+        return 2
     else:
-        hotfix_info = result.decode('cp949').strip().split('\r\n')
+        for info in hotfix_info[1:]:
+            parts = info.split()
 
-        if len(hotfix_info) <= 1:
-            print("설치된 업데이트가 없습니다.")
-        else:
-            for info in hotfix_info[1:]:
-                parts = info.split()
-
-                if len(parts) >= 2:
-                    descriptions = parts[0]
-                    if descriptions == 'Security':
-                        continue
-                    else:
-                        hotfix_id, installed_on = parts[-2], parts[-1]
-                        hotfix_ids.append(hotfix_id)
-                        installed_dates.append(installed_on)
+            if len(parts) >= 2:
+                descriptions = parts[0]
+                if descriptions == 'Security':
+                    continue
                 else:
-                    pass
+                    hotfix_id, installed_on = parts[-2], parts[-1]
+                    hotfix_ids.append(hotfix_id)
+                    installed_dates.append(installed_on)
+            else:
+                pass
 
     return hotfix_ids, installed_dates
 
+
 def compare_update_version_MS():
     try:
-        if get_hotfix() == 1:
+        if get_hotfix_ms() == 1:
             return 1
+        elif get_hotfix_ms() == 2:
+            return 2
         else:
-            hotfix_ids, installed_dates = get_hotfix()
+            hotfix_ids, installed_dates = get_hotfix_ms()
             for i, hotfix_id in enumerate(hotfix_ids):
                 installed_date_str = installed_dates[i]
 
@@ -414,10 +413,9 @@ def check_pc08():
         results.put({
             "id" : "PC-08",
             "sub-id" : "PC-08-uninstall",
-            "type" : "warning",
+            "type" : "info",
             "reason" : "Adobe Acrobat가 설치되어있지 않습니다.",
         })
-     
            
     # 한글이 최신버전이 아닐경우       
     if hangul == 1:
@@ -427,13 +425,21 @@ def check_pc08():
             "type" : "error",
             "reason" : "한글이 최신업데이트가 아닙니다.",
         })
-
+        
+    # MS-Office가 최신버전이 아닐경우
     if ms == 1:
         results.put({
             "id" : "PC-08",
             "sub-id" : "PC-08-update_.ver",
             "type" : "error",
             "reason" : "MS-Office가 최신업데이트가 아닙니다.",
+        })
+    elif ms == 2:       
+        results.put({
+            "id" : "PC-08",
+            "sub-id" : "PC-08-update_.ver",
+            "type" : "info",
+            "reason" : "설치된 업데이트가 없습니다。",
         })       
         
     return results
