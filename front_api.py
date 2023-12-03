@@ -35,8 +35,8 @@ class FrontAPI:
             "PC-13" : security_check.check_pc13,
             "PC-15" : security_check.check_pc15,
             "PC-16" : security_check.check_pc16,
-            #"PC-17" : security_check.check_pc17,
-            #"PC-18" : security_check.check_pc18,
+            "PC-17" : security_check.check_pc17,
+            "PC-18" : security_check.check_pc18,
             "PC-19" : security_check.check_pc19,
         }
         solvers = {

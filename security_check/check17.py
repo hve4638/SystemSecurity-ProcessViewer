@@ -1,5 +1,6 @@
 import subprocess
 from queue import Queue
+from .reg import *
 
 def check_pc17():
     results = Queue()
