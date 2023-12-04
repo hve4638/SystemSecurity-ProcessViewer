@@ -276,11 +276,18 @@ class FrontAPI:
                             case "done":
                                 if result["detected"]:
                                     yield f'detected! (file:"{filename}")\n'
-                                    yield f'- detail {result}"\n'
-                                    #for v in result["detail"]:
-                                    #    if v["detected"]:
-                                            #vname = result["Vendor Name"]
-                                            #vver = result["Vendor Name"]
+                                    for v in result["detail"]:
+                                        try:
+                                            if v["detected"]:
+                                                vname = v["vendor"]
+                                                vver = v["version"]
+                                                vresult = v["result"]
+                                                yield f'- detected by {vname}({vver}) - {vresult}"\n'
+                                        except KeyError as e:
+                                            yield f'- error occured : {filename} ({e})"\n'
+                                            yield f'- contents : {v}"\n'
+                                        except Exception as e:
+                                            yield f'- Exception occured : {type(e)}, {e}"\n'
                                 else:
                                     yield f'normal (file:"{filename}")\n'
                                 break
