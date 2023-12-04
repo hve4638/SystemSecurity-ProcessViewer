@@ -278,9 +278,9 @@ class FrontAPI:
                                     yield f'detected! (file:"{filename}")\n'
                                     for v in result["detail"]:
                                         if v["detected"]:
-                                            vname = result["Vendor Name"]
-                                            vver = result["Vendor Name"]
-                                            yield f'- vendor:"{vname}({vver})"\n'
+                                            #vname = result["Vendor Name"]
+                                            #vver = result["Vendor Name"]
+                                            yield f'- detail {result}"\n'
                                 else:
                                     yield f'normal (file:"{filename}")\n'
                                 break
