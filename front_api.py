@@ -279,12 +279,13 @@ class FrontAPI:
                                     for v in result["detail"]:
                                         try:
                                             if v["detected"]:
-                                                vname = result["vendor"]
-                                                vver = result["version"]
-                                                vresult = result["result"]
+                                                vname = v["vendor"]
+                                                vver = v["version"]
+                                                vresult = v["result"]
                                                 yield f'- detected by {vname}({vver}) - {vresult}"\n'
                                         except KeyError as e:
                                             yield f'- error occured : {filename} ({e})"\n'
+                                            yield f'- contents : {v}"\n'
                                         except Exception as e:
                                             yield f'- Exception occured : {type(e)}, {e}"\n'
                                 else:
