@@ -78,8 +78,14 @@ def virustotal_progress():
                 
                 if outputs_detected == True:  # 악성이 감지됐다면 container[token] 상태 변경
                     info["detected"] = True  # 상태를 감지됐다로 변경
-                    VENDORNAME = {"Vendor Name": vendor, 'detected': outputs_detected, 'version': outputs.get('version', ''), 'result': outputs.get('result', ''), 'update': outputs.get('update', '')}
-                    info["detail"].append(VENDORNAME)
+                    vendoerinfo = {
+                        "vendor": vendor,
+                        'detected': outputs_detected,
+                        'version': outputs.get('version', ''),
+                        'result': outputs.get('result', ''),
+                        'update': outputs.get('update', '')
+                    }
+                    info["detail"].append(vendoerinfo)
                     
                     
                 num = num + 1
