@@ -341,7 +341,7 @@ class MainWindow(QMainWindow):
     def show_message(self, title, message):
         self.msg_box = QMessageBox()
         self.msg_box.setWindowTitle(title)
-        self.msg_box.move(2000, 380)
+        self.msg_box.move(1200, 200)
         self.msg_box.setText("")
         self.msg_box.setStandardButtons(QMessageBox.StandardButton.NoButton)
         self.msg_box.setStyleSheet("""
