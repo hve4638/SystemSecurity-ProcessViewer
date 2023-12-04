@@ -1,295 +1,274 @@
-# IMPORT PACKAGES AND MODULES
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.core.functions import Functions
-
 # IMPORT QT CORE
 # ///////////////////////////////////////////////////////////////
-from gui_2.qt_core import *
-
-# IMPORT SETTINGS
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.core.json_settings import Settings
-
-# IMPORT THEME COLORS
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.core.json_themes import Themes
-
-# IMPORT PY ONE DARK WIDGETS
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.widgets import *
-
-# IMPORT SETUP MAIN WINDOW
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.uis.windows.main_window.setup_main_window import *
-
-# IMPORT MAIN WINDOW PAGES / AND SIDE BOXES FOR APP
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.uis.pages.ui_main_pages import Ui_MainPages
-
-# RIGHT COLUMN
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.uis.columns.ui_right_column import Ui_RightColumn
-
-# CREDITS
-# ///////////////////////////////////////////////////////////////
-from gui_2.gui.widgets.py_credits_bar.py_credits import PyCredits
+from .qt_core import *
+from qt_core import QFileSystemModel, QTreeView, QVBoxLayout
+from PySide6.QtWidgets import QMenu
+from PySide6.QtWidgets import QMessageBox
 
 
-# PY WINDOW
-# ///////////////////////////////////////////////////////////////
-class UI_MainWindow():
+class Ui_MainPages:
     def __init__(self, front_api):
         self.api = front_api
         super().__init__()
 
-    def setup_ui(self, parent):
-        if not parent.objectName():
-            parent.setObjectName("MainWindow")
+    def setupUi(self, MainPages):
+        if not MainPages.objectName():
+            MainPages.setObjectName(u"MainPages")
+        MainPages.resize(860, 600)
+        self.main_pages_layout = QVBoxLayout(MainPages)
+        self.main_pages_layout.setSpacing(0)
+        self.main_pages_layout.setObjectName(u"main_pages_layout")
+        self.main_pages_layout.setContentsMargins(5, 5, 5, 5)
+        self.pages = QStackedWidget(MainPages)
+        self.pages.setObjectName(u"pages")
+        self.page_1 = QWidget()
+        self.page_1.setObjectName(u"page_1")
+        self.page_1.setStyleSheet(u"font-size: 16pt")
 
-        # LOAD SETTINGS
-        # ///////////////////////////////////////////////////////////////
-        settings = Settings()
-        self.settings = settings.items
+        self.pages.addWidget(self.page_1)
+        self.page_2 = QWidget()
+        self.page_2.setObjectName(u"page_2")
+        self.page_2_layout = QVBoxLayout(self.page_2)
+        self.page_2_layout.setSpacing(0)
+        self.page_2_layout.setObjectName(u"page_2_layout")
+        self.page_2_layout.setContentsMargins(0, 0, 0, 0)
 
-        # LOAD THEME COLOR
-        # ///////////////////////////////////////////////////////////////
-        themes = Themes()
-        self.themes = themes.items
+        self.scroll_area = QScrollArea(self.page_2)
+        self.scroll_area.setObjectName(u"scroll_area")
+        self.scroll_area.setStyleSheet(u"background: transparent;")
+        self.scroll_area.setFrameShape(QFrame.NoFrame)
+        self.scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setWidgetResizable(True)
+        self.contents = QWidget()
+        self.contents.setObjectName(u"contents")
+        self.contents.setGeometry(QRect(0, 0, 840, 580))
+        self.contents.setStyleSheet(u"background: transparent;")
+        self.verticalLayout = QVBoxLayout(self.contents)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.title_label = QLabel(self.contents)
+        self.title_label.setObjectName(u"title_label")
+        self.title_label.setMaximumSize(QSize(16777215, 40))
+        font = QFont()
+        font.setPointSize(16)
+        self.title_label.setFont(font)
+        self.title_label.setStyleSheet(u"font-size: 16pt")
+        self.title_label.setAlignment(Qt.AlignCenter)
 
-        # SET INITIAL PARAMETERS
-        parent.resize(self.settings["startup_size"][0], self.settings["startup_size"][1])
-        parent.setMinimumSize(self.settings["minimum_size"][0], self.settings["minimum_size"][1])
+        self.verticalLayout.addWidget(self.title_label)
 
-        # SET CENTRAL WIDGET
-        # Add central widget to app
-        # ///////////////////////////////////////////////////////////////
-        self.central_widget = QWidget()
-        self.central_widget.setStyleSheet(f'''
-            font: {self.settings["font"]["text_size"]}pt "{self.settings["font"]["family"]}";
-            color: {self.themes["app_color"]["text_foreground"]};
-        ''')
-        self.central_widget_layout = QVBoxLayout(self.central_widget)
-        if self.settings["custom_title_bar"]:
-            self.central_widget_layout.setContentsMargins(10,10,10,10)
-        else:
-            self.central_widget_layout.setContentsMargins(0,0,0,0)
+        self.description_label = QLabel(self.contents)
+        self.description_label.setObjectName(u"description_label")
+        self.description_label.setAlignment(Qt.AlignHCenter|Qt.AlignTop)
+        self.description_label.setWordWrap(True)
 
-        # LOAD PY WINDOW CUSTOM WIDGET
-        # Add inside PyWindow "layout" all Widgets
-        # ///////////////////////////////////////////////////////////////
-        ##메인 ui 배경색 설정
-        self.window = PyWindow(
-            parent,
-            bg_color = self.themes["app_color"]["bg_one"],
-            border_color = self.themes["app_color"]["bg_two"],
-            text_color = self.themes["app_color"]["text_foreground"]
-        )
+        self.verticalLayout.addWidget(self.description_label)
 
-        # If disable custom title bar
-        if not self.settings["custom_title_bar"]:
-            self.window.set_stylesheet(border_radius = 0, border_size = 0)
+        self.row_1_layout = QHBoxLayout()
+        self.row_1_layout.setObjectName(u"row_1_layout")
 
-        # ADD PY WINDOW TO CENTRAL WIDGET
-        self.central_widget_layout.addWidget(self.window)
+        self.verticalLayout.addLayout(self.row_1_layout)
 
-        # ADD FRAME LEFT MENU
-        # Add here the custom left menu bar
-        # ///////////////////////////////////////////////////////////////
-        left_menu_margin = self.settings["left_menu_content_margins"]
-        left_menu_minimum = self.settings["lef_menu_size"]["minimum"]
-        self.left_menu_frame = QFrame()
-        self.left_menu_frame.setMaximumSize(left_menu_minimum + (left_menu_margin * 2), 17280)
-        self.left_menu_frame.setMinimumSize(left_menu_minimum + (left_menu_margin * 2), 0)
+        self.row_2_layout = QHBoxLayout()
+        self.row_2_layout.setObjectName(u"row_2_layout")
 
-        # LEFT MENU LAYOUT
-        self.left_menu_layout = QHBoxLayout(self.left_menu_frame)
-        self.left_menu_layout.setContentsMargins(
-            left_menu_margin,
-            left_menu_margin,
-            left_menu_margin,
-            left_menu_margin
-        )
+        self.verticalLayout.addLayout(self.row_2_layout)
 
-        # ADD LEFT MENU
-        # Add custom left menu here
-        # ///////////////////////////////////////////////////////////////
-        self.left_menu = PyLeftMenu(
-            parent = self.left_menu_frame,
-            app_parent = self.central_widget, # For tooltip parent
-            dark_one = self.themes["app_color"]["dark_one"],
-            dark_three = self.themes["app_color"]["dark_three"],
-            dark_four = self.themes["app_color"]["dark_four"],
-            bg_one = self.themes["app_color"]["bg_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["icon_pressed"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            context_color = self.themes["app_color"]["context_color"],
-            text_foreground = self.themes["app_color"]["text_foreground"],
-            text_active = self.themes["app_color"]["text_active"]
-        )
-        self.left_menu_layout.addWidget(self.left_menu)
+        self.row_3_layout = QHBoxLayout()
+        self.row_3_layout.setObjectName(u"row_3_layout")
 
-        # ADD LEFT COLUMN
-        # Add here the left column with Stacked Widgets
-        # ///////////////////////////////////////////////////////////////
-        self.left_column_frame = QFrame()
-        self.left_column_frame.setMaximumWidth(self.settings["left_column_size"]["minimum"])
-        self.left_column_frame.setMinimumWidth(self.settings["left_column_size"]["minimum"])
-        self.left_column_frame.setStyleSheet(f"background: {self.themes['app_color']['bg_two']}")
+        self.verticalLayout.addLayout(self.row_3_layout)
 
-        # ADD LAYOUT TO LEFT COLUMN
-        self.left_column_layout = QVBoxLayout(self.left_column_frame)
-        self.left_column_layout.setContentsMargins(0,0,0,0)
+        self.row_4_layout = QVBoxLayout()
+        self.row_4_layout.setObjectName(u"row_4_layout")
 
-        # ADD CUSTOM LEFT MENU WIDGET
-        self.left_column = PyLeftColumn(
-            parent,
-            app_parent = self.central_widget,
-            text_title = "Settings Left Frame",
-            text_title_size = self.settings["font"]["title_size"],
-            text_title_color = self.themes['app_color']['text_foreground'],
-            icon_path = Functions.set_svg_icon("icon_settings.svg"),
-            dark_one = self.themes['app_color']['dark_one'],
-            bg_color = self.themes['app_color']['bg_three'],
-            btn_color = self.themes['app_color']['bg_three'],
-            btn_color_hover = self.themes['app_color']['bg_two'],
-            btn_color_pressed = self.themes['app_color']['bg_one'],
-            icon_color = self.themes['app_color']['icon_color'],
-            icon_color_hover = self.themes['app_color']['icon_hover'],
-            context_color = self.themes['app_color']['context_color'],
-            icon_color_pressed = self.themes['app_color']['icon_pressed'],
-            icon_close_path = Functions.set_svg_icon("icon_close.svg")
-        )
-        self.left_column_layout.addWidget(self.left_column)
+        self.verticalLayout.addLayout(self.row_4_layout)
 
-        # ADD RIGHT WIDGETS
-        # Add here the right widgets
-        # ///////////////////////////////////////////////////////////////
-        self.right_app_frame = QFrame()
+        self.row_5_layout = QVBoxLayout()
+        self.row_5_layout.setObjectName(u"row_5_layout")
 
-        # ADD RIGHT APP LAYOUT
-        self.right_app_layout = QVBoxLayout(self.right_app_frame)
-        self.right_app_layout.setContentsMargins(3,3,3,3)
-        self.right_app_layout.setSpacing(6)
+        self.verticalLayout.addLayout(self.row_5_layout)
 
-        # ADD TITLE BAR FRAME
-        # ///////////////////////////////////////////////////////////////
-        self.title_bar_frame = QFrame()
-        self.title_bar_frame.setMinimumHeight(40)
-        self.title_bar_frame.setMaximumHeight(40)
-        self.title_bar_layout = QVBoxLayout(self.title_bar_frame)
-        self.title_bar_layout.setContentsMargins(0,0,0,0)
+        self.scroll_area.setWidget(self.contents)
 
-        # ADD CUSTOM TITLE BAR TO LAYOUT
-        self.title_bar = PyTitleBar(
-            parent,
-            logo_width = 100,
-            app_parent = self.central_widget,
-            logo_image = "logo_top_100x22.svg",
-            bg_color = self.themes["app_color"]["bg_two"],
-            div_color = self.themes["app_color"]["bg_three"],
-            btn_bg_color = self.themes["app_color"]["bg_two"],
-            btn_bg_color_hover = self.themes["app_color"]["bg_three"],
-            btn_bg_color_pressed = self.themes["app_color"]["bg_one"],
-            icon_color = self.themes["app_color"]["icon_color"],
-            icon_color_hover = self.themes["app_color"]["icon_hover"],
-            icon_color_pressed = self.themes["app_color"]["icon_pressed"],
-            icon_color_active = self.themes["app_color"]["icon_active"],
-            context_color = self.themes["app_color"]["context_color"],
-            dark_one = self.themes["app_color"]["dark_one"],
-            text_foreground = self.themes["app_color"]["text_foreground"],
-            radius = 8,
-            font_family = self.settings["font"]["family"],
-            title_size = self.settings["font"]["title_size"],
-            is_custom_title_bar = self.settings["custom_title_bar"]
-        )
-        self.title_bar_layout.addWidget(self.title_bar)
+        self.page_2_layout.addWidget(self.scroll_area)
 
-        # ADD CONTENT AREA
-        # ///////////////////////////////////////////////////////////////
-        self.content_area_frame = QFrame()
+        self.pages.addWidget(self.page_2)
+        self.page_3 = QWidget()
+        self.page_3.setObjectName(u"page_3")
+        self.page_3.setStyleSheet(u"QFrame {\n"
+"	font-size: 16pt;\n"
+"}")
+        self.page_3_layout = QVBoxLayout(self.page_3)
+        self.page_3_layout.setObjectName(u"page_3_layout")
 
-        # CREATE LAYOUT
-        self.content_area_layout = QHBoxLayout(self.content_area_frame)
-        self.content_area_layout.setContentsMargins(0,0,0,0)
-        self.content_area_layout.setSpacing(0)
+        self.pages.addWidget(self.page_3)
 
-        # LEFT CONTENT
-        self.content_area_left_frame = QFrame()
+        self.main_pages_layout.addWidget(self.pages)
+        # page_3 설정
+        self.page_3_layout = QVBoxLayout(self.page_3)
+        self.page_3_layout.setObjectName(u"page_3_layout")
 
-        # IMPORT MAIN PAGES TO CONTENT AREA
-        self.load_pages = Ui_MainPages(self.api)
-        self.load_pages.setupUi(self.content_area_left_frame)
+        # 파일 시스템 모델 생성
+        self.file_system_model = QFileSystemModel()
+        self.file_system_model.setRootPath('')  # 여기에 원하는 시작 경로를 설정할 수 있습니다.
 
-        # RIGHT BAR
-        self.right_column_frame = QFrame()
-        self.right_column_frame.setMinimumWidth(self.settings["right_column_size"]["minimum"])
-        self.right_column_frame.setMaximumWidth(self.settings["right_column_size"]["minimum"])
+        # QTreeView 생성
+        self.file_tree_view = QTreeView(self.page_3)
+        self.file_tree_view.setModel(self.file_system_model)  # QTreeView에 모델 설정
+        self.file_tree_view.setRootIndex(self.file_system_model.index(''))  # 여기에 원하는 시작 경로를 설정할 수 있습니다.
+        self.file_tree_view.setObjectName(u"file_tree_view")
+        self.file_tree_view.setAnimated(False)
+        self.file_tree_view.setIndentation(20)
+        self.file_tree_view.setSortingEnabled(True)
+        self.file_tree_view.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.file_tree_view.setStyleSheet("""
+                        QTreeView {
+                            border: none;
+                            background-color: #2C313C;
+                        }
+                        QTreeView::header {
+                        border: none; 
+                        background-color: #2C313C; /* 
+                          }
+                    """)
+        # FileTreeView에 최소 크기를 설정하는 예시
+        self.file_tree_view.setMinimumSize(1300, 600)
 
-        # IMPORT RIGHT COLUMN
-        # ///////////////////////////////////////////////////////////////
-        self.content_area_right_layout = QVBoxLayout(self.right_column_frame)
-        self.content_area_right_layout.setContentsMargins(5,5,5,5)
-        self.content_area_right_layout.setSpacing(0)
+        # page_3_layout에 file_tree_view를 추가
+        self.page_3_layout.addWidget(self.file_tree_view)
+        # QTreeView의 헤더를 가져와서 설정
+        header = self.file_tree_view.header()
 
-        # RIGHT BG
-        self.content_area_right_bg_frame = QFrame()
-        self.content_area_right_bg_frame.setObjectName("content_area_right_bg_frame")
-        self.content_area_right_bg_frame.setStyleSheet(f'''
-        #content_area_right_bg_frame {{
-            border-radius: 8px;
-            background-color: {self.themes["app_color"]["bg_two"]};
-        }}
-        ''')
+        # 첫 번째 열의 너비를 내용에 맞게 조정
+        header.resizeSection(0, header.sectionSizeHint(0))
 
-        # ADD BG
-        self.content_area_right_layout.addWidget(self.content_area_right_bg_frame)
+        # 모든 열이 내용에 맞게 자동으로 조정되도록 설정
+        header.setSectionResizeMode(QHeaderView.ResizeToContents)
 
-        # ADD RIGHT PAGES TO RIGHT COLUMN
-        self.right_column = Ui_RightColumn()
-        self.right_column.setupUi(self.content_area_right_bg_frame)
+        # 또는 특정 열을 사용 가능한 공간에 맞춰서 스트레치하도록 설정
+        header.setSectionResizeMode(0, QHeaderView.Stretch)
 
-        # ADD TO LAYOUTS
-        self.content_area_layout.addWidget(self.content_area_left_frame)
-        self.content_area_layout.addWidget(self.right_column_frame)
+        # Enable the context menu for the file_tree_view
+        self.file_tree_view.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.file_tree_view.customContextMenuRequested.connect(self.openContextMenu)
 
-        # CREDITS / BOTTOM APP FRAME
-        # ///////////////////////////////////////////////////////////////
-        self.credits_frame = QFrame()
-        self.credits_frame.setMinimumHeight(26)
-        self.credits_frame.setMaximumHeight(26)
+        self.pages.setCurrentIndex(0)
 
-        # CREATE LAYOUT
-        self.credits_layout = QVBoxLayout(self.credits_frame)
-        self.credits_layout.setContentsMargins(0,0,0,0)
+        QMetaObject.connectSlotsByName(MainPages)
 
-        # ADD CUSTOM WIDGET CREDITS
-        self.credits = PyCredits(
-            bg_two = self.themes["app_color"]["bg_two"],
-            copyright = self.settings["copyright"],
-            version = self.settings["version"],
-            font_family = self.settings["font"]["family"],
-            text_size = self.settings["font"]["text_size"],
-            text_description_color = self.themes["app_color"]["text_description"]
-        )
+    # setupUi
 
-        #  ADD TO LAYOUT
-        self.credits_layout.addWidget(self.credits)
+    def retranslateUi(self, MainPages):
+        MainPages.setWindowTitle(QCoreApplication.translate("MainPages", u"Form", None))
+        self.label.setText(QCoreApplication.translate("MainPages", u"", None))
+        self.title_label.setText(QCoreApplication.translate("MainPages", u"Kisa 점검사항", None))
+        self.empty_page_label.setText(QCoreApplication.translate("MainPages", u"Empty Page", None))
+    # retranslateUi
 
-        # ADD WIDGETS TO RIGHT LAYOUT
-        # ///////////////////////////////////////////////////////////////
-        self.right_app_layout.addWidget(self.title_bar_frame)
-        self.right_app_layout.addWidget(self.content_area_frame)
-        self.right_app_layout.addWidget(self.credits_frame)
+#우클릭 이벤트
+    def openContextMenu(self, position):
+        index = self.file_tree_view.indexAt(position)
+        if not index.isValid():
+            return  # 유효한 인덱스가 아니면 함수를 종료합니다.
 
-        # ADD WIDGETS TO "PyWindow"
-        # Add here your custom widgets or default widgets
-        # ///////////////////////////////////////////////////////////////
-        self.window.layout.addWidget(self.left_menu_frame)
-        self.window.layout.addWidget(self.left_column_frame)
-        self.window.layout.addWidget(self.right_app_frame)
+        # 필요에 따라 다른 열 번호로 변경할 수 있습니다.
+        model = self.file_tree_view.model()
+        filename = model.filePath(index)
 
-        # ADD CENTRAL WIDGET AND SET CONTENT MARGINS
-        # ///////////////////////////////////////////////////////////////
-        parent.setCentralWidget(self.central_widget)
+        menu = QMenu()
+        action_virus_total = QAction("Virus Total", self.file_tree_view)
+        action_detailed_info = QAction("상세정보", self.file_tree_view)
+
+        menu.addAction(action_virus_total)
+        menu.addAction(action_detailed_info)
+
+        # QAction의 triggered 이벤트에 연결할 때, filename을 전달합니다.
+        action_virus_total.triggered.connect(lambda: self.virus_total_clicked(filename))
+        action_detailed_info.triggered.connect(self.detailed_info_clicked)
+
+        menu.exec_(self.file_tree_view.viewport().mapToGlobal(position))
+
+    def virus_total_clicked(self, filename):
+        print(filename)
+        try:
+            # API 호출 결과를 저장
+            response_texts_generator = self.api.VirusTotal.upload_file(filename)
+            response_texts = response_texts_generator()
+            # 로그 메시지를 저장하기 위한 문자열 초기화
+            combined_text = ""
+
+            # 제너레이터에서 로그 메시지를 순서대로 읽어옴
+            for text in response_texts:
+                if text is None:
+                    break
+                combined_text += text
+            # QMessageBox를 생성하여 텍스트 표시
+            message_box = QMessageBox()
+            message_box.setIcon(QMessageBox.Information)
+            message_box.setWindowTitle("Virus Total 결과")
+            message_box.setText(combined_text)
+            message_box.setStandardButtons(QMessageBox.Ok)
+            ok_button = message_box.button(QMessageBox.Ok)
+            if ok_button:
+                ok_button.setStyleSheet(f"""
+                               QPushButton {{
+                                   border-radius: 8px;
+                                   color: #8a95aa;
+                                   background-color: #1b1e23;
+                               }}
+                           """)
+                ok_button.setMinimumSize(100, 40)
+
+            message_box.setStyleSheet("""
+                     QMessageBox {
+                         background-color: #2C313C;
+                     }
+                     QLabel {
+                         font-size: 20px; 
+                         color: white;
+                     }
+
+                     """)
+            spacer = QSpacerItem(500, 500, QSizePolicy.Minimum, QSizePolicy.Expanding)
+            layout = message_box.layout()
+            layout.addItem(spacer, layout.rowCount(), 0, 1, layout.columnCount())
+
+            # QMessageBox 표시
+            message_box.exec_()
+
+        except Exception as e:
+            print(f"오류 발생: {e}")
+
+    def detailed_info_clicked(self):
+        selected_indexes = self.file_tree_view.selectionModel().selectedIndexes()
+        selected_indexes = [index for index in selected_indexes if index.column() == 0]
+
+        if selected_indexes:
+            index = selected_indexes[0]  # 첫 번째 선택된 항목
+            file_info = self.file_system_model.fileInfo(index)
+
+            file_details = (
+                f"파일 이름: {file_info.fileName()}\n"
+                f"파일 경로: {file_info.filePath()}\n"
+                f"파일 크기: {file_info.size()} 바이트\n"
+                f"마지막 변경 날짜: {file_info.lastModified().toString('yyyy-MM-dd hh:mm:ss')}\n"
+                f"생성 날짜: {file_info.birthTime().toString('yyyy-MM-dd hh:mm:ss')}"
+            )
+
+            # QMessageBox를 생성하고 설정합니다.
+            detailed_info_msg = QMessageBox()
+            detailed_info_msg.setIcon(QMessageBox.Information)
+            detailed_info_msg.setText(file_details)
+            detailed_info_msg.setWindowTitle("파일 상세 정보")
+            detailed_info_msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+            # QMessageBox를 실행합니다.
+            retval = detailed_info_msg.exec_()
+
+            if retval == QMessageBox.Ok:
+                print("확인 버튼이 클릭되었습니다.")
+
+                # 여기까지

@@ -384,11 +384,12 @@ class MainWindow(QMainWindow):
         button_text = "자동 조치" if cansolve else "수동 조치"
         action_button = QPushButton(button_text, self)
         # 스타일 설정
+        action_button.setFixedSize(400, 23)
         action_button.setStyleSheet("""
             QPushButton {
                 color: #FFFFFF; /* 텍스트 색상 */
                 background-color: #5A5A5A; /* 배경색 */
-                border-radius: 10px; /* 테두리 둥근 정도 */
+                border-radius: 3px; /* 테두리 둥근 정도 */
                 padding: 5px; /* 안쪽 여백 */
                 border: none; /* 테두리 없음 */
             }
@@ -441,24 +442,24 @@ class MainWindow(QMainWindow):
         # 오류 발생 텍스트 라벨 생성
         error_label = QLabel("오류 발생")
         error_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        spacer = QSpacerItem(75, 20, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        spacer = QSpacerItem(80, 23, QSizePolicy.Minimum, QSizePolicy.Expanding)
         layout.addSpacerItem(spacer)
         layout.addWidget(error_label)
 
         # 자세히 보기 버튼 생성
         detail_button = QPushButton("자세히 보기")
-        detail_button.setFixedSize(70, 20)  # 버튼 크기 설정
+        detail_button.setFixedSize(80, 23)  # 버튼 크기 설정
         detail_button.clicked.connect(lambda: self.show_detail_message(detail_text))
 
         layout.addWidget(detail_button)  # 버튼을 레이아웃에 추가
-        layout.setContentsMargins(5, 5, 5, 5)
+        layout.setContentsMargins(0, 0, 0, 0)
         widget.setLayout(layout)
 
         detail_button.setStyleSheet("""
                             QPushButton {
                                 color: #FFFFFF; /* 텍스트 색상 */
                                 background-color: #5A5A5A; /* 배경색 */
-                                border-radius: 10px; /* 테두리 둥근 정도 */
+                                border-radius: 3px; /* 테두리 둥근 정도 */
                                 padding: 5px; /* 안쪽 여백 */
                                 border: none; /* 테두리 없음 */
                             }
@@ -469,7 +470,6 @@ class MainWindow(QMainWindow):
                                 background-color: #484848; /* 클릭 시 배경색 */
                             }
                         """)
-        detail_button.clicked.connect(lambda: self.show_detail_message(detail_text))
 
         # 테이블 위젯에 위젯 추가
         self.table_widget.setCellWidget(row, 2, widget)
@@ -480,7 +480,7 @@ class MainWindow(QMainWindow):
                     QPushButton {
                         color: #FFFFFF; /* 텍스트 색상 */
                         background-color: #5A5A5A; /* 배경색 */
-                        border-radius: 10px; /* 테두리 둥근 정도 */
+                        border-radius: 3px; /* 테두리 둥근 정도 */
                         padding: 5px; /* 안쪽 여백 */
                         border: none; /* 테두리 없음 */
                     }
